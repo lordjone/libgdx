@@ -83,7 +83,7 @@ public class VelocityPanel extends EditorPanel
 							new Insets(0, 0, 0, 6), 0, 0));
 		}
 		{
-			contentPanel.add(mPhiPanel = new ScaledNumericPanel(aValue.getPhi(), charTitle, "Elevation angle", "Rotation around Y axis", false), 
+			contentPanel.add(mPhiPanel = new ScaledNumericPanel(aValue.getPhi(), charTitle, "Elevation angle", "Rotation around X axis", false),
 					new GridBagConstraints(0, 4, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE,
 							new Insets(0, 0, 0, 6), 0, 0));
 		}
