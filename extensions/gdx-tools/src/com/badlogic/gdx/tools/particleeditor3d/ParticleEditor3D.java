@@ -108,7 +108,7 @@ public class ParticleEditor3D extends JFrame {
                 EventQueue.invokeLater(new Runnable() {
                         public void run () {
                                 editRowsPanel.removeAll();
-                                addEditorRow(new NumericPanel(fovValue, "Fielf of View", ""));
+                                addEditorRow(new NumericPanel(fovValue, "Field of View", ""));
                                 addEditorRow(new NumericPanel(deltaMultiplier, "Delta multiplier", ""));
                                 addEditorRow(new GradientPanel(backgroundColor, "Background color", "", true));
                                 addEditorRow(new DrawPanel(ParticleEditor3D.this, "Draw", ""));
