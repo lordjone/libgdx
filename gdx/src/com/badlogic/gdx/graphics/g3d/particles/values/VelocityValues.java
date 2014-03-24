@@ -123,7 +123,7 @@ public final class VelocityValues {
 		}
 	}
 	
-	public static class BillboardBrownianVelocityValue extends StrengthVelocityValue<BillboardParticle, StrengthVelocityData>{
+	public static class BillboardBrownianVelocityValue extends AngularVelocityValue<BillboardParticle>{
 		public BillboardBrownianVelocityValue () {
 			super();
 		}
@@ -134,9 +134,14 @@ public final class VelocityValues {
 		public BillboardBrownianVelocityValue copy () {
 			return new BillboardBrownianVelocityValue(this);
 		}
-		public void addVelocity (ParticleController<BillboardParticle> controller, BillboardParticle particle, StrengthVelocityData velocityData){
-			float strength = velocityData.strengthStart + velocityData.strengthDiff * strengthValue.getScale(particle.lifePercent);
-			TMP_V3.set(MathUtils.random(-1, 1f), MathUtils.random(-1, 1f), MathUtils.random(-1, 1f)).nor();
+		public void addVelocity (ParticleController<BillboardParticle> controller, BillboardParticle particle, AngularVelocityData velocityData){
+			float strength = velocityData.strengthStart + velocityData.strengthDiff * strengthValue.getScale(particle.lifePercent),
+					phi = velocityData.phistart + velocityData.phiDiff * phiValue.getScale(particle.lifePercent),  
+					theta = velocityData.thetaStart + velocityData.thetaDiff * thetaValue.getScale(particle.lifePercent);
+			float cosTheta = MathUtils.cosDeg(theta), sinTheta = MathUtils.sinDeg(theta),
+				cosPhi = MathUtils.cosDeg(phi), sinPhi = MathUtils.sinDeg(phi);
+			TMP_V3.set(	cosPhi *sinTheta, cosTheta, sinPhi *sinTheta);	
+			TMP_V3.scl(MathUtils.random(-1, 1f), MathUtils.random(-1, 1f), MathUtils.random(-1, 1f)).nor();
 			particle.velocity.add(TMP_V3.scl(strength));
 		}
 	}
@@ -260,7 +265,7 @@ public final class VelocityValues {
 		}
 	}
 	
-	public static class ModelInstanceBrownianVelocityValue extends StrengthVelocityValue<ModelInstanceParticle, StrengthVelocityData>{
+	public static class ModelInstanceBrownianVelocityValue extends AngularVelocityValue<ModelInstanceParticle>{
 		public ModelInstanceBrownianVelocityValue () {
 			super();
 		}
@@ -271,9 +276,14 @@ public final class VelocityValues {
 		public ModelInstanceBrownianVelocityValue copy () {
 			return new ModelInstanceBrownianVelocityValue(this);
 		}
-		public void addVelocity (ParticleController<ModelInstanceParticle> controller, ModelInstanceParticle particle, StrengthVelocityData velocityData){
-			float strength = velocityData.strengthStart + velocityData.strengthDiff * strengthValue.getScale(particle.lifePercent);
-			TMP_V3.set(MathUtils.random(-1, 1f), MathUtils.random(-1, 1f), MathUtils.random(-1, 1f)).nor();
+		public void addVelocity (ParticleController<ModelInstanceParticle> controller, ModelInstanceParticle particle, AngularVelocityData velocityData){
+			float strength = velocityData.strengthStart + velocityData.strengthDiff * strengthValue.getScale(particle.lifePercent),
+					phi = velocityData.phistart + velocityData.phiDiff * phiValue.getScale(particle.lifePercent),  
+					theta = velocityData.thetaStart + velocityData.thetaDiff * thetaValue.getScale(particle.lifePercent);
+			float cosTheta = MathUtils.cosDeg(theta), sinTheta = MathUtils.sinDeg(theta),
+				cosPhi = MathUtils.cosDeg(phi), sinPhi = MathUtils.sinDeg(phi);
+			TMP_V3.set(	cosPhi *sinTheta, cosTheta, sinPhi *sinTheta);	
+			TMP_V3.scl(MathUtils.random(-1, 1f), MathUtils.random(-1, 1f), MathUtils.random(-1, 1f)).nor();
 			particle.velocity.add(TMP_V3.scl(strength));
 		}
 	}
@@ -428,7 +438,7 @@ public final class VelocityValues {
 		}
 	}
 	
-	public static class ParticleControllerBrownianVelocityValue extends StrengthVelocityValue<ParticleControllerParticle, StrengthVelocityData>{
+	public static class ParticleControllerBrownianVelocityValue extends AngularVelocityValue<ParticleControllerParticle>{
 		public ParticleControllerBrownianVelocityValue () {
 			super();
 		}
@@ -439,9 +449,14 @@ public final class VelocityValues {
 		public ParticleControllerBrownianVelocityValue copy () {
 			return new ParticleControllerBrownianVelocityValue(this);
 		}
-		public void addVelocity (ParticleController<ParticleControllerParticle> controller, ParticleControllerParticle particle, StrengthVelocityData velocityData){
-			float strength = velocityData.strengthStart + velocityData.strengthDiff * strengthValue.getScale(particle.lifePercent);
-			TMP_V3.set(MathUtils.random(-1, 1f), MathUtils.random(-1, 1f), MathUtils.random(-1, 1f)).nor();
+		public void addVelocity (ParticleController<ParticleControllerParticle> controller, ParticleControllerParticle particle, AngularVelocityData velocityData){
+			float strength = velocityData.strengthStart + velocityData.strengthDiff * strengthValue.getScale(particle.lifePercent),
+					phi = velocityData.phistart + velocityData.phiDiff * phiValue.getScale(particle.lifePercent),  
+					theta = velocityData.thetaStart + velocityData.thetaDiff * thetaValue.getScale(particle.lifePercent);
+			float cosTheta = MathUtils.cosDeg(theta), sinTheta = MathUtils.sinDeg(theta),
+				cosPhi = MathUtils.cosDeg(phi), sinPhi = MathUtils.sinDeg(phi);
+			TMP_V3.set(	cosPhi *sinTheta, cosTheta, sinPhi *sinTheta);	
+			TMP_V3.scl(MathUtils.random(-1, 1f), MathUtils.random(-1, 1f), MathUtils.random(-1, 1f)).nor();
 			particle.velocity.add(TMP_V3.scl(strength));
 		}
 	}
@@ -581,7 +596,7 @@ public final class VelocityValues {
 		}
 	}
 	
-	public static class PointBrownianVelocityValue extends StrengthVelocityValue<PointSpriteParticle, StrengthVelocityData>{
+	public static class PointBrownianVelocityValue extends AngularVelocityValue<PointSpriteParticle>{
 		public PointBrownianVelocityValue () {
 			super();
 		}
@@ -592,9 +607,14 @@ public final class VelocityValues {
 		public PointBrownianVelocityValue copy () {
 			return new PointBrownianVelocityValue(this);
 		}
-		public void addVelocity (ParticleController<PointSpriteParticle> controller, PointSpriteParticle particle, StrengthVelocityData velocityData){
-			float strength = velocityData.strengthStart + velocityData.strengthDiff * strengthValue.getScale(particle.lifePercent);
-			TMP_V3.set(MathUtils.random(-1, 1f), MathUtils.random(-1, 1f), MathUtils.random(-1, 1f)).nor();
+		public void addVelocity (ParticleController<PointSpriteParticle> controller, PointSpriteParticle particle, AngularVelocityData velocityData){
+			float strength = velocityData.strengthStart + velocityData.strengthDiff * strengthValue.getScale(particle.lifePercent),
+					phi = velocityData.phistart + velocityData.phiDiff * phiValue.getScale(particle.lifePercent),  
+					theta = velocityData.thetaStart + velocityData.thetaDiff * thetaValue.getScale(particle.lifePercent);
+			float cosTheta = MathUtils.cosDeg(theta), sinTheta = MathUtils.sinDeg(theta),
+				cosPhi = MathUtils.cosDeg(phi), sinPhi = MathUtils.sinDeg(phi);
+			TMP_V3.set(	cosPhi *sinTheta, cosTheta, sinPhi *sinTheta);	
+			TMP_V3.scl(MathUtils.random(-1, 1f), MathUtils.random(-1, 1f), MathUtils.random(-1, 1f)).nor();
 			particle.velocity.add(TMP_V3.scl(strength));
 		}
 	}
