@@ -70,14 +70,17 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.TextureData;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.particles.BillboardParticle;
 import com.badlogic.gdx.graphics.g3d.particles.Particle;
@@ -150,7 +153,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.StreamUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
 
 import de.matthiasmann.twlthemeeditor.gui.NewClasspathDialog;
 
@@ -652,11 +658,12 @@ public class ParticleEditor3D extends JFrame implements AssetErrorListener {
 		
 		public void create () {
 			if (ui != null) return;
+			int w = Gdx.graphics.getWidth(), h = Gdx.graphics.getHeight();
 			modelBatch = new ModelBatch();
 			environment = new Environment();
 			environment.add(new DirectionalLight().set(Color.WHITE, 0,0,-1));
 			
-			worldCamera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+			worldCamera = new PerspectiveCamera(67, w, h);
 			worldCamera.position.set(10, 10, 10);
 			worldCamera.lookAt(0,0,0);
 			worldCamera.near = 0.1f;
@@ -679,8 +686,8 @@ public class ParticleEditor3D extends JFrame implements AssetErrorListener {
 
 			models = new Array<Model>();
 			ModelBuilder builder = new ModelBuilder();
-			Model 	xyzModel = builder.createXYZCoordinates(10),
-				planeModel = builder.createLineGrid(10, 10, 1, 1, Color.WHITE);
+			Model 	xyzModel = builder.createXYZCoordinates(10, new Material(), Usage.Position|Usage.ColorPacked),
+				planeModel = builder.createLineGrid(10, 10, 1, 1, new Material(ColorAttribute.createDiffuse(Color.WHITE)), Usage.Position);
 			models.add(xyzModel);
 			models.add(planeModel);
 			xyzInstance = new ModelInstance(xyzModel);
@@ -737,7 +744,6 @@ public class ParticleEditor3D extends JFrame implements AssetErrorListener {
 				new ParticleEffect( effectPanel.createDefaultTemplateController()));
 		}
 
-
 		@Override
 		public void resize (int width, int height) {
 			Gdx.input.setInputProcessor(new InputMultiplexer(ui, cameraInputController));
@@ -746,7 +752,8 @@ public class ParticleEditor3D extends JFrame implements AssetErrorListener {
 			worldCamera.viewportWidth = width;
 			worldCamera.viewportHeight = height;
 			worldCamera.update();
-			ui.setViewport(width, height);
+			ui.getViewport().setWorldSize(width, height);
+			ui.getViewport().update(width, height, true);
 		}
 
 		public void render () {
