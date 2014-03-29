@@ -121,7 +121,7 @@ public class TemplatePickerPanel<T> extends EditorPanel<Array<T>> implements Lis
 	
 
 	public void reloadTemplates () {
-		setLoadedTemplates(editor.assetManager.get(type,  new Array<T>()));
+		setLoadedTemplates(editor.assetManager.getAll(type,  new Array<T>()));
 	}
 	
 	protected void initializeComponents (Class<T> type, LoaderButton<T> loaderButton) {

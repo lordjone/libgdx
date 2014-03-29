@@ -166,7 +166,7 @@ public abstract class ParticleController<T> implements Json.Serializable, Resour
 	
 	/** Generally called by the Emitter. 
 	 * This method will notify all the sub systems that a given amount 
-	 * of particles have been activated. */
+	 * of particles has been activated. */
 	public void activateParticles (int startIndex, int count) {
 		emitter.activateParticles(startIndex, count);
 		for(Influencer influencer : influencers)
@@ -175,7 +175,7 @@ public abstract class ParticleController<T> implements Json.Serializable, Resour
 	
 	/** Generally called by the Emitter. 
 	 * This method will notify all the sub systems that a given amount 
-	 * of particles have been killed. */
+	 * of particles has been killed. */
 	public void killParticles (int startIndex, int count){
 		emitter.killParticles(startIndex, count);
 		for(Influencer influencer : influencers)

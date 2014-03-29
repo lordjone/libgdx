@@ -63,6 +63,7 @@ import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader.BitmapFontParameter;
 import com.badlogic.gdx.assets.loaders.resolvers.AbsoluteFileHandleResolver;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.backends.lwjgl.LwjglCanvas;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -247,7 +248,7 @@ public class ParticleEditor3D extends JFrame implements AssetErrorListener {
 
 		assetManager = new AssetManager();
 		assetManager.setErrorListener(this);
-		assetManager.setLoader(ParticleEffect.class, new ParticleEffectLoader(new AbsoluteFileHandleResolver()));
+		assetManager.setLoader(ParticleEffect.class, new ParticleEffectLoader(new InternalFileHandleResolver()));
 		effect = new ParticleEffect();
 		lwjglCanvas = new LwjglCanvas(renderer = new AppRenderer());
 		addWindowListener(new WindowAdapter() {
@@ -672,6 +673,16 @@ public class ParticleEditor3D extends JFrame implements AssetErrorListener {
 
 			cameraInputController = new CameraInputController(worldCamera);
 
+			//Batches
+			PointSpriteParticleBatch.init();
+			pointSpriteBatch = new PointSpriteParticleBatch();
+			pointSpriteBatch.setCamera(worldCamera);
+			
+			billboardBatch = new BillboardParticleBatch();
+			billboardBatch.setCamera(worldCamera);
+			modelInstanceParticleBatch = new ModelInstanceParticleBatch();
+			
+			
 			fovValue = new NumericValue();
 			fovValue.setValue(67);
 			fovValue.setActive(true);
@@ -698,10 +709,16 @@ public class ParticleEditor3D extends JFrame implements AssetErrorListener {
 
 
 			//Load default resources
+			ParticleEffectLoader.ParticleEffectLoadParameter params = new ParticleEffectLoader.ParticleEffectLoadParameter(getPointSpriteBatch(), 
+																																				getBillboardBatch(), getModelInstanceParticleBatch());
 			assetManager.load(DEFAULT_BILLBOARD_PARTICLE, Texture.class);
 			assetManager.load(DEFAULT_MODEL_PARTICLE, Model.class);
 			assetManager.load(DEFAULT_SKIN, Skin.class);
+			assetManager.load(DEFAULT_PFX, ParticleEffect.class, params);
+			assetManager.load(DEFAULT_TEMPLATE_PFX, ParticleEffect.class, params);
+			
 			assetManager.finishLoading();
+			assetManager.setLoader(ParticleEffect.class, new ParticleEffectLoader(new AbsoluteFileHandleResolver()));
 			assetManager.get(DEFAULT_MODEL_PARTICLE, Model.class).materials.get(0).set(new BlendingAttribute(GL20.GL_ONE, GL20.GL_ONE_MINUS_SRC_ALPHA, 1));
 			
 			//Ui
@@ -727,21 +744,16 @@ public class ParticleEditor3D extends JFrame implements AssetErrorListener {
 			table.add(playPauseButton).expand().bottom().left().row();
 			ui.addActor(table);
 			
-			//Batches
-			PointSpriteParticleBatch.init();
-			pointSpriteBatch = new PointSpriteParticleBatch();
-			pointSpriteBatch.setCamera(worldCamera);
-			
-			billboardBatch = new BillboardParticleBatch();
-			billboardBatch.setCamera(worldCamera);
-			modelInstanceParticleBatch = new ModelInstanceParticleBatch();
-			
 			setTexture((Texture)assetManager.get(DEFAULT_BILLBOARD_PARTICLE));
 			effectPanel.createDefaultEmitter(BillboardParticleController.class, true, true);
-			assetManager.set(ParticleEffect.class, DEFAULT_PFX, 
-					new ParticleEffect( effectPanel.createDefaultEmitter(BillboardParticleController.class, false, false)));
-			assetManager.set(ParticleEffect.class, DEFAULT_TEMPLATE_PFX, 
-				new ParticleEffect( effectPanel.createDefaultTemplateController()));
+			
+			//assetManager.set(ParticleEffect.class, DEFAULT_PFX, 
+			//		new ParticleEffect( effectPanel.createDefaultEmitter(BillboardParticleController.class, false, false)));
+			//assetManager.set(ParticleEffect.class, DEFAULT_TEMPLATE_PFX, 
+			//effect = new ParticleEffect( effectPanel.createDefaultTemplateController());
+			//ParticleEffectLoader loader = assetManager.getLoader(ParticleEffect.class);
+			//loader.save(effect, parameter)
+			//saveEffect(Gdx.files.external("defaultTemplate.pfx").file());
 		}
 
 		@Override
@@ -928,7 +940,7 @@ public class ParticleEditor3D extends JFrame implements AssetErrorListener {
 	}
 
 	public TextureAtlas getAtlas(Texture texture){
-		Array<TextureAtlas> atlases = assetManager.get(TextureAtlas.class, new Array<TextureAtlas>());
+		Array<TextureAtlas> atlases = assetManager.getAll(TextureAtlas.class, new Array<TextureAtlas>());
 		for(TextureAtlas atlas : atlases){
 			if(atlas.getTextures().contains(texture))
 				return atlas;
@@ -946,7 +958,7 @@ public class ParticleEditor3D extends JFrame implements AssetErrorListener {
 
 	public Array<ParticleEffect> getParticleEffects (Array<ParticleController> controllers, Array<ParticleEffect> out) {
 		out.clear();
-		assetManager.get(ParticleEffect.class, out);
+		assetManager.getAll(ParticleEffect.class, out);
 		for(int i=0; i < out.size;){
 			ParticleEffect effect = out.get(i);
 			Array<ParticleController> effectControllers = effect.getControllers();

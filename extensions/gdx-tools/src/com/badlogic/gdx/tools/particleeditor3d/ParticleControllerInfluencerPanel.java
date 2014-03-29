@@ -85,7 +85,7 @@ public class ParticleControllerInfluencerPanel extends InfluencerPanel<ParticleC
 	private void reloadControllers () {
 		Array<ParticleEffect> effects = new Array<ParticleEffect>();
 		Array<ParticleController> controllers = new Array<ParticleController>();
-		editor.assetManager.get(ParticleEffect.class, effects);
+		editor.assetManager.getAll(ParticleEffect.class, effects);
 		for(ParticleEffect effect : effects){
 			controllers.addAll(effect.getControllers());
 		}

@@ -181,7 +181,7 @@ public abstract class ParticleControllerInfluencer extends Influencer<ParticleCo
 	@Override
 	public void save (AssetManager manager, ResourceData resources) {
 		SaveData data = resources.createSaveData();
-		Array<ParticleEffect> effects = manager.get(ParticleEffect.class, new Array<ParticleEffect>());
+		Array<ParticleEffect> effects = manager.getAll(ParticleEffect.class, new Array<ParticleEffect>());
 		ObjectMap<String, Array<Integer>> controllerIndices = new ObjectMap<String, Array<Integer>>();
 		
 		for(ParticleController controller : templates){

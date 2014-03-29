@@ -152,7 +152,7 @@ public class RegularEmitter<T extends Particle> extends Emitter<T> implements Js
 	
 	private void addParticles (int count) {
 		count = Math.min(count, maxParticleCount - activeCount);
-		if (count == 0) return;
+		if (count <= 0) return;
 		controller.activateParticles (activeCount, count);
 		activeCount += count;
 	}
