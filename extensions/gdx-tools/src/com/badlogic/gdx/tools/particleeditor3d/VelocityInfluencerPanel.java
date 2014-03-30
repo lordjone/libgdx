@@ -296,10 +296,10 @@ public class VelocityInfluencerPanel extends InfluencerPanel<VelocityInfluencer>
 					velocityValue instanceof PointBrownianVelocityValue ||
 					velocityValue instanceof ModelInstanceBrownianVelocityValue ||
 					velocityValue instanceof ParticleControllerBrownianVelocityValue){
-			strengthVelocityPanel.setValue((StrengthVelocityValue) velocityValue);
-			strengthVelocityPanel.setName("Brownian Velocity");
-			strengthVelocityPanel.setDescription("A directional velocity which has random direction at each update, in world units/sec.");
-			panel = strengthVelocityPanel;
+			angularVelocityPanel.setValue((AngularVelocityValue) velocityValue);
+			angularVelocityPanel.setName("Brownian Velocity");
+			angularVelocityPanel.setDescription("A directional velocity which has random direction, multiplied by the given vector, at each update, in world units/sec.");
+			panel = angularVelocityPanel;
 		}
 		else if(velocityValue instanceof ModelInstanceRotationVelocityValue || 
 			velocityValue instanceof ParticleControllerRotationVelocityValue ){
