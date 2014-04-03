@@ -2,6 +2,7 @@ package com.badlogic.gdx.graphics.g3d.particles.values;
 
 import com.badlogic.gdx.graphics.g3d.particles.ParticleControllerComponent;
 import com.badlogic.gdx.graphics.g3d.particles.values.VelocityDatas.AngularVelocityData;
+import com.badlogic.gdx.graphics.g3d.particles.values.VelocityDatas.StrengthVelocityData;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -53,7 +54,7 @@ public abstract class AngularVelocityValue<P> extends StrengthVelocityValue<P, A
 
 	@Override
 	public void initData (AngularVelocityData data) {
-		super.initData(data);
+		super.initData((StrengthVelocityData)data);
 		
 		//Theta
 		data.thetaStart = thetaValue.newLowValue();
