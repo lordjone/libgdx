@@ -62,6 +62,7 @@ public class AdvancedSettingsPanel extends javax.swing.JPanel {
 		Ctx.cfgSetup.suffixCommon = coreSuffixField.getText();
 		Ctx.cfgSetup.suffixDesktop = desktopSuffixField.getText();
 		Ctx.cfgSetup.suffixAndroid = androidSuffixField.getText();
+		Ctx.cfgSetup.suffixHtml = htmlSuffixField.getText();
 		Ctx.cfgSetup.suffixRobovm = iosSuffixField.getText();
 		Ctx.cfgSetup.androidMinSdkVersion = androidMinSdkField.getText();
 		Ctx.cfgSetup.androidMaxSdkVersion = androidMaxSdkField.getText();
@@ -70,7 +71,8 @@ public class AdvancedSettingsPanel extends javax.swing.JPanel {
 		Ctx.cfgUpdate.suffixCommon = coreSuffixField.getText();
 		Ctx.cfgUpdate.suffixDesktop = desktopSuffixField.getText();
 		Ctx.cfgUpdate.suffixAndroid = androidSuffixField.getText();
-      Ctx.cfgUpdate.suffixRobovm = iosSuffixField.getText();
+		Ctx.cfgUpdate.suffixHtml = htmlSuffixField.getText();
+      		Ctx.cfgUpdate.suffixRobovm = iosSuffixField.getText();
 		Ctx.fireCfgSetupChanged();
 	}
 
