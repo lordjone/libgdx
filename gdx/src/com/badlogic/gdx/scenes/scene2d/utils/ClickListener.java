@@ -61,7 +61,7 @@ public class ClickListener extends InputListener {
 		pressedButton = button;
 		touchDownX = x;
 		touchDownY = y;
-		visualPressedTime = 0;
+		visualPressedTime = TimeUtils.nanoTime() + visualPressedDuration * 1000000000;
 		return true;
 	}
 
@@ -90,7 +90,6 @@ public class ClickListener extends InputListener {
 				}
 			}
 			pressed = false;
-			visualPressedTime = TimeUtils.nanoTime() + visualPressedDuration * 1000000000;
 			pressedPointer = -1;
 			pressedButton = -1;
 			cancelled = false;

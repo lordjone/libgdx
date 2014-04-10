@@ -27,17 +27,26 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.setup.Executor.CharCallback;
+
 /**
  * Command line tool to generate libgdx projects
  * @author badlogic
  *
  */
 public class GdxSetup {
-	public void build (String outputDir, String appName, String packageName, String mainClass, String sdkLocation) {
+	public static boolean isSdkLocationValid (String sdkLocation) {
+		return new File(sdkLocation, "tools").exists() && new File(sdkLocation, "platforms").exists();
+	}
+	
+	public void build (String outputDir, String appName, String packageName, String mainClass, String sdkLocation, CharCallback callback) {
 		Project project = new Project();
 		
 		String packageDir = packageName.replace('.', '/');
 		String sdkPath = sdkLocation.replace('\\', '/');
+		if(!isSdkLocationValid(sdkLocation)) {
+			System.out.println("Android SDK location '" + sdkLocation + "' doesn't contain an SDK");
+		}
 
 		// root dir/gradle files
 		project.files.add(new ProjectFile("gitignore", ".gitignore", false));
@@ -52,8 +61,8 @@ public class GdxSetup {
 		// core project
 		project.files.add(new ProjectFile("core/build.gradle"));
 		project.files.add(new ProjectFile("core/src/MainClass", "core/src/" + packageDir + "/" + mainClass + ".java", true));
-		//core but gwt required
-		project.files.add(new ProjectFile("core/CoreGdxDefinition", "core/src/" + packageDir + "/" + mainClass + ".gwt.xml", true));
+		//core but html required
+		project.files.add(new ProjectFile("core/CoreGdxDefinition", "core/src/" + mainClass + ".gwt.xml", true));
 		
 		// desktop project
 		project.files.add(new ProjectFile("desktop/build.gradle"));
@@ -74,15 +83,16 @@ public class GdxSetup {
 		project.files.add(new ProjectFile("android/proguard-project.txt", false));
 		project.files.add(new ProjectFile("android/project.properties", false));
 
-		//gwt project
-		project.files.add(new ProjectFile("gwt/build.gradle"));
-		project.files.add(new ProjectFile("gwt/src/GwtLauncher", "gwt/src/" + packageDir + "/client/GwtLauncher.java", true));
-		project.files.add(new ProjectFile("gwt/GdxDefinition", "gwt/src/" + packageDir + "/GdxDefinition.gwt.xml", true));
-		project.files.add(new ProjectFile("gwt/GdxDefinitionSuperdev", "gwt/src/" + packageDir + "/GdxDefinitionSuperdev.gwt.xml", true));
-		project.files.add(new ProjectFile("gwt/war/index", "gwt/webapp/index.html", true));
-		project.files.add(new ProjectFile("gwt/war/soundmanager2-jsmin.js", "gwt/webapp/soundmanager2-jsmin.js", false));
-		project.files.add(new ProjectFile("gwt/war/soundmanager2-setup.js", "gwt/webapp/soundmanager2-setup.js", false));
-		project.files.add(new ProjectFile("gwt/war/WEB-INF/web.xml", "gwt/webapp/WEB-INF/web.xml", true));
+		//html project
+		project.files.add(new ProjectFile("html/build.gradle"));
+		project.files.add(new ProjectFile("html/src/HtmlLauncher", "html/src/" + packageDir + "/client/HtmlLauncher.java", true));
+		project.files.add(new ProjectFile("html/GdxDefinition", "html/src/" + packageDir + "/GdxDefinition.gwt.xml", true));
+		project.files.add(new ProjectFile("html/GdxDefinitionSuperdev", "html/src/" + packageDir + "/GdxDefinitionSuperdev.gwt.xml", true));
+		project.files.add(new ProjectFile("html/war/index", "html/webapp/index.html", true));
+		project.files.add(new ProjectFile("html/war/styles.css", "html/webapp/styles.css", false));
+		project.files.add(new ProjectFile("html/war/soundmanager2-jsmin.js", "html/webapp/soundmanager2-jsmin.js", false));
+		project.files.add(new ProjectFile("html/war/soundmanager2-setup.js", "html/webapp/soundmanager2-setup.js", false));
+		project.files.add(new ProjectFile("html/war/WEB-INF/web.xml", "html/webapp/WEB-INF/web.xml", true));
 
 		//ios robovm
 		project.files.add(new ProjectFile("ios/src/IOSLauncher", "ios/src/" + packageDir + "/IOSLauncher.java", true));
@@ -94,6 +104,7 @@ public class GdxSetup {
 		Map<String, String> values = new HashMap<String, String>();
 		values.put("%APP_NAME%", appName);
 		values.put("%PACKAGE%", packageName);
+		values.put("%PACKAGE_DIR%", packageDir);
 		values.put("%MAIN_CLASS%", mainClass);
 		values.put("%ANDROID_SDK%", sdkPath);
 		
@@ -101,6 +112,8 @@ public class GdxSetup {
 		
 		// HACK executable flag isn't preserved for whatever reason...
 		new File(outputDir, "gradlew").setExecutable(true);
+		
+		Executor.execute(new File(outputDir), "gradlew.bat", "gradlew", "clean", callback);
 	}
 
 	private void copyAndReplace (String outputDir, Project project, Map<String, String> values) {
@@ -191,7 +204,7 @@ public class GdxSetup {
 		System.out.println("name ... the name of the application");
 		System.out.println("package ... the Java package name of the application");
 		System.out.println("mainClass ... the name of your main ApplicationListener");
-		System.out.println("sdkLocation ... the location of your android SDK");
+		System.out.println("sdkLocation ... the location of your android SDK. Uses ANDROID_HOME if not specified");
 	}
 	
 	private static Map<String, String> parseArgs(String[] args) {
@@ -211,11 +224,22 @@ public class GdxSetup {
 	
 	public static void main (String[] args) {
 		Map<String, String> params = parseArgs(args);
-		if(!params.containsKey("dir") || !params.containsKey("name") || !params.containsKey("package") || !params.containsKey("mainClass") || !params.containsKey("sdkLocation")) {
+                if(!params.containsKey("dir") || !params.containsKey("name") || !params.containsKey("package") || !params.containsKey("mainClass") || ((!params.containsKey("sdkLocation") && System.getenv("ANDROID_HOME") == null))) {
 			new GdxSetupUI();
 			printHelp();
 		} else {
-			new GdxSetup().build(params.get("dir"), params.get("name"), params.get("package"), params.get("mainClass"), params.get("sdkLocation"));
+			String sdkLocation = "";
+			if (System.getenv("ANDROID_HOME") != null && !params.containsKey("sdkLocation")) {
+				sdkLocation = System.getenv("ANDROID_HOME");
+			} else {
+				sdkLocation = params.get("sdkLocation");
+			}
+			new GdxSetup().build(params.get("dir"), params.get("name"), params.get("package"), params.get("mainClass"), sdkLocation, new CharCallback() {
+				@Override
+				public void character (char c) {
+					System.out.print(c);
+				}
+			});
 		}
 	}
 }
