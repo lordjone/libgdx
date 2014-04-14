@@ -52,6 +52,7 @@ public abstract class ParticleController<T> implements Json.Serializable, Resour
 		transform = new Matrix4();
 		velocity = new Vector3();
 		scale = new Vector3(1,1,1);
+		influencers = new Array<Influencer<T>>(true, 3, Influencer.class);
 	}
 	
 	public ParticleController(String name, Emitter<T> emitter, ParticleBatch<T> batch, Influencer<T>...influencers){
@@ -62,7 +63,6 @@ public abstract class ParticleController<T> implements Json.Serializable, Resour
 		this.influencers = new Array<Influencer<T>>(influencers);
 	}
 	
-
 	/** Sets the current transformation to the given one.
 	 * @param transform the new transform matrix */
 	public void setTransform (Matrix4 transform) {
@@ -269,7 +269,7 @@ public abstract class ParticleController<T> implements Json.Serializable, Resour
 	public void read (Json json, JsonValue jsonMap) {
 		name = json.readValue("name", String.class, jsonMap);
 		emitter = json.readValue("emitter", Emitter.class, jsonMap);
-		influencers = json.readValue("influencers", Array.class, Influencer.class, jsonMap);
+		influencers.addAll(json.readValue("influencers", Array.class, Influencer.class, jsonMap));
 	}
 
 	@Override
@@ -298,5 +298,4 @@ public abstract class ParticleController<T> implements Json.Serializable, Resour
 		}
 		return false;
 	}
-
 }

@@ -78,7 +78,7 @@ public class ParticleEffectLoader extends AsynchronousAssetLoader<ParticleEffect
 		Writer fileWriter = new FileWriter(parameter.file);
 		Json json = new Json();
 		json.toJson(data, fileWriter);
-		System.out.println(json.prettyPrint(data));
+		//System.out.println(json.prettyPrint(data));
 	}
 	
 	@Override

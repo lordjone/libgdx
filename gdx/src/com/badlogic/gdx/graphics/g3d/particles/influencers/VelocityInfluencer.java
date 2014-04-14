@@ -230,6 +230,6 @@ public abstract class VelocityInfluencer<T extends Particle> extends Influencer<
 	
 	@Override
 	public void read (Json json, JsonValue jsonData) {
-		velocities = json.readValue("velocities", Array.class, VelocityValue.class, jsonData);
+		velocities.addAll(json.readValue("velocities", Array.class, VelocityValue.class, jsonData));
 	}
 }
