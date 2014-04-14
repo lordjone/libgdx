@@ -34,8 +34,8 @@ public class TextureLoaderPanel extends EditorPanel {
 		JButton atlasButton = new JButton("Open Atlas");
 		JButton textureButton = new JButton("Open Texture");
 		final JCheckBox genMipMaps = new JCheckBox("Generate MipMaps");
-		final JComboBox<TextureFilter> minFilterBox = new JComboBox<Texture.TextureFilter>(new DefaultComboBoxModel(TextureFilter.values()));
-		final JComboBox<TextureFilter> magFilterBox = new JComboBox<Texture.TextureFilter>(new DefaultComboBoxModel(TextureFilter.values()));
+		final JComboBox minFilterBox = new JComboBox(new DefaultComboBoxModel(TextureFilter.values()));
+		final JComboBox magFilterBox = new JComboBox(new DefaultComboBoxModel(TextureFilter.values()));
 
 		minFilterBox.setSelectedItem(editor.getTexture().getMinFilter());
 		magFilterBox.setSelectedItem(editor.getTexture().getMagFilter());

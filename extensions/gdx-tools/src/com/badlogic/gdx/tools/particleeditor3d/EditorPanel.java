@@ -190,7 +190,7 @@ public abstract class EditorPanel<T> extends JPanel {
 	protected void removePanel () {
 		Container parent = this.getParent();
 		parent.remove(this);
-		parent.revalidate();
+		parent.validate();
 		parent.repaint();
 	}
 

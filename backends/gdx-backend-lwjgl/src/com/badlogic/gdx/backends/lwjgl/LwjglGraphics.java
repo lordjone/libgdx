@@ -236,6 +236,17 @@ public class LwjglGraphics implements Graphics {
 	}
 
 	public void initiateGLInstances () {
+
+		if(config.useGL30){
+			gl20 = gl30 = Gdx.gl30 = new LwjglGL30();
+		}
+		else {
+			gl20 = new LwjglGL20();
+		}
+		
+		Gdx.gl = gl20;
+		Gdx.gl20 = gl20;
+		
 		String version = org.lwjgl.opengl.GL11.glGetString(GL11.GL_VERSION);
 		major = Integer.parseInt("" + version.charAt(0));
 		minor = Integer.parseInt("" + version.charAt(2));
@@ -248,16 +259,6 @@ public class LwjglGraphics implements Graphics {
 					+ ", FBO extension: false");
 			}
 		}
-
-		if(config.useGL30){
-			gl20 = gl30 = Gdx.gl30 = new LwjglGL30();
-		}
-		else {
-			gl20 = new LwjglGL20();
-		}
-		
-		Gdx.gl = gl20;
-		Gdx.gl20 = gl20;
 	}
 
 	@Override
