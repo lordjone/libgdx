@@ -71,12 +71,17 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 
 /** @author Inferno */
 public class ParticleControllerTest extends BaseG3dTest{
-	public static final String DEFAULT_PARTICLE = "data/pre_particle.png";
+	public static final String DEFAULT_PARTICLE = "data/pre_particle.png",
+										DEFAULT_SKIN ="data/uiskin.json";
 	Quaternion tmpQuaternion = new Quaternion();
 	Matrix4 tmpMatrix = new Matrix4(), tmpMatrix4 = new Matrix4();
 	Vector3 tmpVector = new Vector3();
@@ -102,22 +107,39 @@ public class ParticleControllerTest extends BaseG3dTest{
 		}
 	}
 	
+	//Simulation
 	Array<ParticleController> emitters;
-	Array<Action> actions;
+	
+	//Rendering
 	Environment environment;
 	BillboardParticleBatch billboardParticleBatch;
+	
+	//UI
+	Stage ui;
+	Label fpsLabel;
+	StringBuilder builder;
+	
 	@Override
 	public void create () {
 		super.create();
 		emitters = new Array<ParticleController>();
-		actions = new Array<Action>();
 		assets.load(DEFAULT_PARTICLE, Texture.class);
+		assets.load(DEFAULT_SKIN, Skin.class);
 		loading = true;
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0f, 0f, 0.1f, 1f));
 		environment.add(new DirectionalLight().set(1f, 1f, 1f,  0, -0.5f, -1 ));
 		billboardParticleBatch = new BillboardParticleBatch();
 		billboardParticleBatch.setCamera(cam);
+		ui = new Stage();
+		builder = new StringBuilder();
+	}
+	
+	@Override
+	public void resize (int width, int height) {
+		super.resize(width, height);
+		ui.getViewport().setWorldSize(width, height);
+		ui.getViewport().update(width, height, true);
 	}
 	
 	@Override
@@ -132,7 +154,7 @@ public class ParticleControllerTest extends BaseG3dTest{
 		emitters.add(controller);
 		controller.translate(Vector3.tmp.set(5,5,0));
 		controller.rotate(Vector3.X, -90);
-		actions.add(new RotationAction(controller, Vector3.X, 360));
+		ui.addAction(new RotationAction(controller, Vector3.X, 360));
 
 		//Y
 		controller = createBillboardController(new float[] { 0.12156863f, 1, 0.047058824f}, particleTexture);
@@ -140,7 +162,7 @@ public class ParticleControllerTest extends BaseG3dTest{
 		controller.start();
 		controller.translate(Vector3.tmp.set(0,5,-5));
 		controller.rotate(Vector3.Z, -90);
-		actions.add(new RotationAction(controller, Vector3.Y, -360));
+		ui.addAction(new RotationAction(controller, Vector3.Y, -360));
 		emitters.add(controller);
 		
 		//Z
@@ -149,8 +171,19 @@ public class ParticleControllerTest extends BaseG3dTest{
 		controller.start();
 		controller.translate(Vector3.tmp.set(0,5,5));
 		controller.rotate(Vector3.Z, -90);
-		actions.add(new RotationAction(controller, Vector3.Z, -360));		
+		ui.addAction(new RotationAction(controller, Vector3.Z, -360));		
 		emitters.add(controller);
+
+		setupUI();
+	}
+
+	private void setupUI () {
+		Skin skin = assets.get(DEFAULT_SKIN);
+		Table table = new Table();
+		table.setFillParent(true);
+		table.top().left().add(new Label("FPS ", skin)).left();
+		table.add(fpsLabel = new Label("", skin)).left().expandX().row();
+		ui.addActor(table);
 	}
 
 	private ParticleController createBillboardController (float[] colors, Texture particleTexture) {
@@ -183,15 +216,17 @@ public class ParticleControllerTest extends BaseG3dTest{
 		colorInfluencer.alphaValue.setScaling(new float[] {0, 0.15f, 0.5f, 0});
 
 		//Velocity
+		/*
 		BillboardVelocityInfluencer velocityInfluencer = new BillboardVelocityInfluencer();
 		BillboardBrownianVelocityValue velocityValue = new BillboardBrownianVelocityValue();
 		velocityValue.strengthValue.setHigh(5, 10);
 		velocityInfluencer.velocities.add(velocityValue);
+		*/
 		
 		return new BillboardParticleController("Billboard Controller", emitter, billboardParticleBatch, 
 			new RegionInfluencer.BillboardSingleRegionInfluencer(particleTexture),
 			spawnSource,
-			velocityInfluencer,
+			//velocityInfluencer,
 			scaleInfluencer,
 			colorInfluencer
 			);
@@ -202,8 +237,11 @@ public class ParticleControllerTest extends BaseG3dTest{
 		if(emitters.size > 0){
 			//Update
 			float delta = Gdx.graphics.getDeltaTime();
-			for(Action action : actions)
-				action.act(delta);
+			builder.delete(0, builder.length());
+			builder.append(Gdx.graphics.getFramesPerSecond());
+			fpsLabel.setText(builder);
+			ui.act(delta);
+			
 			billboardParticleBatch.begin();
 			for (ParticleController controller : emitters){
 				controller.update(delta);
@@ -213,5 +251,6 @@ public class ParticleControllerTest extends BaseG3dTest{
 			batch.render(billboardParticleBatch, environment);
 		}
 		batch.render(instances, environment);
+		ui.draw();
 	}
 }
