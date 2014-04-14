@@ -240,8 +240,6 @@ public class LwjglGraphics implements Graphics {
 		major = Integer.parseInt("" + version.charAt(0));
 		minor = Integer.parseInt("" + version.charAt(2));
 
-		gl20 = new LwjglGL20();
-
 		if (major <= 1)
 			throw new GdxRuntimeException("OpenGL 2.0 or higher with the FBO extension is required. OpenGL version: " + version);
 		if (major == 2 || version.contains("2.1")) {
@@ -251,6 +249,13 @@ public class LwjglGraphics implements Graphics {
 			}
 		}
 
+		if(config.useGL30){
+			gl20 = gl30 = Gdx.gl30 = new LwjglGL30();
+		}
+		else {
+			gl20 = new LwjglGL20();
+		}
+		
 		Gdx.gl = gl20;
 		Gdx.gl20 = gl20;
 	}
