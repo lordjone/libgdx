@@ -25,12 +25,15 @@ import com.badlogic.gdx.utils.GdxRuntimeException;
 public class CubemapAttribute extends Attribute {
 	public final static String EnvironmentMapAlias = "environmentMapTexture";
 	public final static long EnvironmentMap = register(EnvironmentMapAlias);
-
+	public final static String IrradianceMapAlias = "irradianceMap",
+										RadianceMapAlias = "radianceMap";
+	public final static long 	IrradianceMap = register(IrradianceMapAlias),
+										RadianceMap = register(RadianceMapAlias);
 	// FIXME add more types!
 	// FIXME add scaling + offset?
 	// FIXME add filter settings? MipMap needs to be obeyed during loading :/
 
-	protected static long Mask = EnvironmentMap;
+	protected static long Mask = EnvironmentMap | IrradianceMap | RadianceMap;
 
 	public final static boolean is (final long mask) {
 		return (mask & Mask) != 0;
@@ -38,6 +41,14 @@ public class CubemapAttribute extends Attribute {
 
 	public final TextureDescriptor<Cubemap> textureDescription;
 
+	public static Attribute createIrradiance (Cubemap irradianceCubemap) {
+		return new CubemapAttribute(IrradianceMap, irradianceCubemap);
+	}
+	
+	public static Attribute createRadiance (Cubemap radianceCubemap) {
+		return new CubemapAttribute(RadianceMap, radianceCubemap);
+	}
+	
 	public CubemapAttribute (final long type) {
 		super(type);
 		if (!is(type)) throw new GdxRuntimeException("Invalid type specified");
