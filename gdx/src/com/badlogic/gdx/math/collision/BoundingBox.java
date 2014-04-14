@@ -233,6 +233,18 @@ public class BoundingBox implements Serializable {
 		crn_dirty = true;
 		return this.set(min, max);
 	}
+	
+	public BoundingBox translate (Vector3 translation) {
+		return translate(translation.x, translation.y, translation.z);
+	}
+	
+	public BoundingBox translate (float dx, float dy, float dz) {
+		min.add(dx, dy, dz);
+		max.add(dx, dy, dz);
+		cnt.add(dx, dy, dz);
+		crn_dirty = true;
+		return this;
+	}
 
 	/** Returns whether the given bounding box is contained in this bounding box.
 	 * @param b The bounding box
@@ -240,6 +252,13 @@ public class BoundingBox implements Serializable {
 	public boolean contains (BoundingBox b) {
 		return !isValid()
 			|| (min.x <= b.min.x && min.y <= b.min.y && min.z <= b.min.z && max.x >= b.max.x && max.y >= b.max.y && max.z >= b.max.z);
+	}
+	
+	/** @return whether the given sphere is contained in this bounding box.*/
+	public boolean contains (float x, float y, float z, float radius) {
+		x -=cnt.x; y -=cnt.y; z -=cnt.z;
+		return !isValid() ||
+					( min.x <= x-radius && x+radius <= max.x && min.y <= y-radius && y+radius <= max.y && min.z <= z-radius && z+radius <= max.z);
 	}
 
 	/** Returns whether the given bounding box is intersecting this bounding box (at least one point in).
