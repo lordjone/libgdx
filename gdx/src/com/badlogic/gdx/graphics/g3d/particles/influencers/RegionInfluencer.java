@@ -305,6 +305,7 @@ public class RegionInfluencer<T> extends Influencer<T> {
 
 	@Override
 	public void read (Json json, JsonValue jsonData) {
+		regions.clear();
 		regions.addAll(json.readValue("regions", Array.class, AspectTextureRegion.class, jsonData));
 	}
 }
