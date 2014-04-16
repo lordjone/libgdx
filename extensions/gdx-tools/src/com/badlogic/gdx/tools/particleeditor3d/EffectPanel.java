@@ -111,7 +111,7 @@ class EffectPanel extends JPanel {
 	DefaultTableModel emitterTableModel;
 	int editIndex = -1;
 	String lastDir;
-	JComboBox<ControllerType> controllerTypeCombo;
+	JComboBox controllerTypeCombo;
 	
 	
 	public EffectPanel (ParticleEditor3D editor) {

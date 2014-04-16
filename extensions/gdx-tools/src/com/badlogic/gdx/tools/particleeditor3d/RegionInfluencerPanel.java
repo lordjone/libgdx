@@ -56,7 +56,7 @@ public class RegionInfluencerPanel extends InfluencerPanel<RegionInfluencer> imp
 				
 				regionPickerPanel.revalidate();
 				regionPickerPanel.repaint();
-				regionSelectDialog.revalidate();
+				regionSelectDialog.validate();
 				regionSelectDialog.repaint();
 				regionSelectDialog.pack();
 				regionSelectDialog.setVisible(true);
