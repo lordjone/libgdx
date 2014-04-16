@@ -156,6 +156,7 @@ public class ParticleControllerTest extends BaseG3dTest{
 		controller.rotate(Vector3.X, -90);
 		ui.addAction(new RotationAction(controller, Vector3.X, 360));
 
+		/*
 		//Y
 		controller = createBillboardController(new float[] { 0.12156863f, 1, 0.047058824f}, particleTexture);
 		controller.init();
@@ -173,7 +174,7 @@ public class ParticleControllerTest extends BaseG3dTest{
 		controller.rotate(Vector3.Z, -90);
 		ui.addAction(new RotationAction(controller, Vector3.Z, -360));		
 		emitters.add(controller);
-
+		*/
 		setupUI();
 	}
 
@@ -190,9 +191,9 @@ public class ParticleControllerTest extends BaseG3dTest{
 		//Emission
 		RegularEmitter emitter = new RegularEmitter();
 		emitter.getDuration().setLow(3000);
-		emitter.getEmission().setHigh(900);
+		emitter.getEmission().setHigh(49000);
 		emitter.getLife().setHigh(1000);
-		emitter.setMaxParticleCount(1000);
+		emitter.setMaxParticleCount(50000);
 
 		//Spawn
 		PointSpawnShapeValue pointSpawnShapeValue = new PointSpawnShapeValue();		
@@ -241,7 +242,7 @@ public class ParticleControllerTest extends BaseG3dTest{
 			builder.append(Gdx.graphics.getFramesPerSecond());
 			fpsLabel.setText(builder);
 			ui.act(delta);
-			
+
 			billboardParticleBatch.begin();
 			for (ParticleController controller : emitters){
 				controller.update(delta);
