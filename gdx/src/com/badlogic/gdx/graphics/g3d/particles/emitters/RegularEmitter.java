@@ -18,7 +18,7 @@ public class RegularEmitter<T extends Particle> extends Emitter<T> implements Js
 	protected int lifeOffset, lifeOffsetDiff;
 	protected int life, lifeDiff;
 	protected float duration = 1, delay, durationTimer, delayTimer;
-	private boolean continuous;
+	private boolean continuous, emissionCycleRunning;
 
 	public RegularEmitter(){
 		delayValue = new RangedNumericValue(); 
@@ -31,6 +31,7 @@ public class RegularEmitter<T extends Particle> extends Emitter<T> implements Js
 		emissionValue.setActive(true);
 		lifeValue.setActive(true);
 		continuous = true;
+		emissionCycleRunning = true;
 	}
 	
 	public RegularEmitter (RegularEmitter regularEmitter) {
@@ -91,7 +92,7 @@ public class RegularEmitter<T extends Particle> extends Emitter<T> implements Js
 		if (delayTimer < delay) {
 			delayTimer += deltaMillis;
 		} else {
-			boolean isEmissionCycleRunning = true;
+			boolean emitNextCycle = emissionCycleRunning;
 			//End check
 			if (durationTimer < duration) {
 				durationTimer += deltaMillis;
@@ -101,10 +102,10 @@ public class RegularEmitter<T extends Particle> extends Emitter<T> implements Js
 				if (continuous) 
 					controller.start();
 				else 
-					isEmissionCycleRunning = false;
+					emitNextCycle = false;
 			}
 			
-			if(isEmissionCycleRunning) {
+			if(emitNextCycle) {
 				//Emit particles
 				emissionDelta += deltaMillis;
 				float emissionTime = emission + emissionDiff * emissionValue.getScale(percent);
@@ -183,6 +184,22 @@ public class RegularEmitter<T extends Particle> extends Emitter<T> implements Js
 
 	public void setContinuous (boolean continuous) {
 		this.continuous = continuous;
+	}
+	
+	/**
+	 * Irrelevant on non-continuous emitters. 
+	 * @return true if continuous emitter is supposed to run subsequent particles emission cycles, false otherwise
+	 */
+	public boolean isEmissionCycleRunning(){
+		return emissionCycleRunning;
+	}
+
+	/**
+	 * Doesn't have any effect on non-continuous emitters.
+	 * @param true to allow or false to disallow subsequent particles emission cycles on continuous emitters
+	 */
+	public void setEmissionCycleRunning(boolean emissionCycleRunning){
+		this.emissionCycleRunning = emissionCycleRunning;
 	}
 	
 	public boolean isComplete () {
