@@ -186,10 +186,18 @@ public class RegularEmitter<T extends Particle> extends Emitter<T> implements Js
 		this.continuous = continuous;
 	}
 	
+	/**
+	 * Irrelevant on non-continuous emitters. 
+	 * @return true if continuous emitter is supposed to run subsequent particles emission cycles, false otherwise
+	 */
 	public boolean isEmissionCycleRunning(){
 		return emissionCycleRunning;
 	}
-	
+
+	/**
+	 * Doesn't have any effect on non-continuous emitters.
+	 * @param true to allow or false to disallow subsequent particles emission cycles on continuous emitters
+	 */
 	public void setEmissionCycleRunning(boolean emissionCycleRunning){
 		this.emissionCycleRunning = emissionCycleRunning;
 	}
