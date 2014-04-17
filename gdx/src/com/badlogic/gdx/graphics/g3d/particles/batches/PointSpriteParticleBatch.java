@@ -79,8 +79,9 @@ public class PointSpriteParticleBatch extends BufferedParticleBatch<PointSpriteP
 
 	public static void init () {
 		Gdx.gl.glEnable(GL20.GL_VERTEX_PROGRAM_POINT_SIZE);
-		if(Gdx.app.getType() == ApplicationType.Desktop) 
-			Gdx.gl20.glEnable(0x8861); // GL_POINT_OES
+		if(Gdx.app.getType() == ApplicationType.Desktop) {
+			Gdx.gl.glEnable(0x8861); // GL_POINT_OES
+		}
 	}
 
 	public void setTexture(Texture texture){
