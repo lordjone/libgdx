@@ -112,11 +112,11 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 	
 	public BillboardParticleBatch(AlignMode mode, boolean useGPU, int capacity){
 		super(BillboardParticle.class, new BillboardDistanceParticleSorter());
-		this.mode = mode;
-		this.useGPU = useGPU;
 		renderables = new Array<Renderable>();
 		renderablePool = new RenderablePool();
 		setVertexData();
+		setUseGpu(useGPU);
+		setAlignMode(mode);
 		ensureCapacity(capacity);
 	}
 
@@ -229,6 +229,7 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 	/** Sets the current align mode.
 	*  It will reallocate internal data, use only when necessary. */
 	public void setUseGpu(boolean useGPU){
+		System.out.println("trying to useGPU "+useGPU);
 		if(this.useGPU != useGPU){
 			this.useGPU = useGPU;
 			initRenderData();

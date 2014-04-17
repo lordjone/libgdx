@@ -58,8 +58,7 @@ public abstract class BufferedParticleBatch<T> implements ParticleBatch<T>{
 	}
 	
 	protected void allocParticlesData (int capacity){
-		T[] particles = (T[])Array.newInstance(type, capacity);
-		bufferedParticles = particles;
+		bufferedParticles  = (T[])Array.newInstance(type, capacity);
 	}
 	
 	public void setCamera(Camera camera){
