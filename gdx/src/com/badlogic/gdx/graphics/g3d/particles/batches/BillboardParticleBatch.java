@@ -25,6 +25,7 @@ import com.badlogic.gdx.graphics.g3d.particles.ResourceData;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleSorter.BillboardDistanceParticleSorter;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -111,13 +112,14 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 	
 	
 	public BillboardParticleBatch(AlignMode mode, boolean useGPU, int capacity){
-		super(BillboardParticle.class, new BillboardDistanceParticleSorter());
+		//super(BillboardParticle.class, new BillboardDistanceParticleSorter());
+		super(BillboardParticle.class, new ParticleSorter.BillboardDistanceParticleSorter());
 		renderables = new Array<Renderable>();
-		renderablePool = new RenderablePool();
-		setVertexData();
+		renderablePool = new RenderablePool();	
+		initRenderData();
+		ensureCapacity(capacity);
 		setUseGpu(useGPU);
 		setAlignMode(mode);
-		ensureCapacity(capacity);
 	}
 
 	public BillboardParticleBatch () {
@@ -142,19 +144,29 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 			new DepthTestAttribute(GL20.GL_LEQUAL, false),
 			TextureAttribute.createDiffuse(texture));
 		renderable.mesh = new Mesh(false, MAX_VERTICES_PER_MESH, MAX_PARTICLES_PER_MESH*6, currentAttributes);
+		renderable.mesh.setIndices(indices);
 		renderable.shader = shader;
 		return renderable;
 	}
 	
-	private void allocRenderables(int capacity){			
-		int 	verticesCount = Math.min(capacity * 4, MAX_VERTICES_PER_MESH),
-				verticesFCount = verticesCount * currentVertexSize,
-				indicesCount = (verticesCount/4)*6;
+	private void allocVerticesAndIndices(){
+		int 	verticesFCount = MAX_VERTICES_PER_MESH * currentVertexSize,
+			indicesCount = MAX_PARTICLES_PER_MESH * 6;
 		vertices = new float[verticesFCount];
 		indices = new short[indicesCount];
-		
+		for(int i=0, vertex = 0; i < indicesCount; i+=6, vertex+=4){
+			indices[i] = (short)vertex;
+			indices[i+1] = (short)(vertex+1);
+			indices[i+2] = (short)(vertex+2);
+			indices[i+3] = (short)(vertex+2);
+			indices[i+4] = (short)(vertex+3);
+			indices[i+5] = (short)vertex;
+		}
+	}
+	
+	private void allocRenderables(int capacity){			
 		//Free old meshes
-		int 	meshCount = Math.max( capacity/MAX_PARTICLES_PER_MESH, 1),
+		int 	meshCount = MathUtils.ceil( capacity/MAX_PARTICLES_PER_MESH),
 				free = renderablePool.getFree();
 		if(free < meshCount){
 			for(int i=0, left = meshCount - free; i < left;++i)
@@ -172,7 +184,7 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 	private void allocShader () {
 		Renderable newRenderable = allocRenderable();
 		shader = newRenderable.shader = getShader(newRenderable);
-		renderablePool.free(newRenderable);	
+		renderablePool.free(newRenderable);
 	}
 	
 	private void clearRenderablesPool(){
@@ -207,8 +219,8 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 	private void initRenderData () {
 		setVertexData();
 		clearRenderablesPool();
+		allocVerticesAndIndices();
 		allocShader();
-		allocRenderables(bufferedParticles.length);
 	}
 	
 	/** Sets the current align mode.
@@ -218,6 +230,7 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 			this.mode = mode;
 			if(useGPU){
 				initRenderData();
+				allocRenderables(bufferedParticles.length);
 			}
 		}
 	}
@@ -229,10 +242,10 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 	/** Sets the current align mode.
 	*  It will reallocate internal data, use only when necessary. */
 	public void setUseGpu(boolean useGPU){
-		System.out.println("trying to useGPU "+useGPU);
 		if(this.useGPU != useGPU){
 			this.useGPU = useGPU;
 			initRenderData();
+			allocRenderables(bufferedParticles.length);
 		}
 	}
 
@@ -327,7 +340,8 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 		renderables.clear();
 	}
 	
-	protected void flush(){
+	@Override
+	protected void flush(BillboardParticle[] sortedArray){
 		int p=0;
 		int leftVertexCount = bufferedParticlesCount*4;
 
@@ -339,7 +353,7 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 					int vertexFcount = 0, indicesCount = 0;
 
 					for(int v =0; v < toAddVertexCount; v+=4, indicesCount+=6, ++p){
-					BillboardParticle particle = bufferedParticles[p];
+					BillboardParticle particle = sortedArray[p];
 					float sx = particle.halfWidth * particle.scale, 
 							sy = particle.halfHeight * particle.scale;
 
@@ -348,18 +362,10 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 					putVertex(vertices, vertexFcount, particle, sx, -sy, particle.u2, particle.v2); vertexFcount+= currentVertexSize;
 					putVertex(vertices, vertexFcount, particle, sx, sy, particle.u2, particle.v); vertexFcount+= currentVertexSize;			
 					putVertex(vertices, vertexFcount, particle, -sx, sy, particle.u, particle.v); vertexFcount+= currentVertexSize;
-
-					indices[indicesCount] = (short)v;
-					indices[indicesCount+1] = (short)(v+1);
-					indices[indicesCount+2] = (short)(v+2);
-					indices[indicesCount+3] = (short)(v+2);
-					indices[indicesCount+4] = (short)(v+3);
-					indices[indicesCount+5] = (short)v;
 				}
 
 				renderable.meshPartSize = indicesCount;
 				renderable.mesh.setVertices(vertices, 0, vertexFcount);
-				renderable.mesh.setIndices(indices, 0, indicesCount);	
 				leftVertexCount -= toAddVertexCount;
 				renderables.add(renderable);
 				}
@@ -371,7 +377,7 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 					int vertexFcount = 0, indicesCount = 0;
 
 					for(int v =0; v < toAddVertexCount; v+=4, indicesCount+=6, ++p){
-						BillboardParticle particle = bufferedParticles[p];
+						BillboardParticle particle = sortedArray[p];
 						float sx = particle.scale * particle.halfWidth , 
 							sy = particle.scale * particle.halfHeight;
 						//bottom left, bottom right, top right, top left
@@ -380,18 +386,10 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 						putVertex(vertices, vertexFcount, particle, sx, -sy,  particle.u2, particle.v2, TMP_V1); vertexFcount+= currentVertexSize;
 						putVertex(vertices, vertexFcount, particle, sx, sy, particle.u2, particle.v, TMP_V1); vertexFcount+= currentVertexSize;			
 						putVertex(vertices, vertexFcount, particle, -sx, sy, particle.u, particle.v, TMP_V1); vertexFcount+= currentVertexSize;
-
-						indices[indicesCount] = (short)v;
-						indices[indicesCount+1] = (short)(v+1);
-						indices[indicesCount+2] = (short)(v+2);
-						indices[indicesCount+3] = (short)(v+2);
-						indices[indicesCount+4] = (short)(v+3);
-						indices[indicesCount+5] = (short)v;
 					}
 
 					renderable.meshPartSize = indicesCount;
 					renderable.mesh.setVertices(vertices, 0, vertexFcount);
-					renderable.mesh.setIndices(indices, 0, indicesCount);	
 					leftVertexCount -= toAddVertexCount;
 					renderables.add(renderable);
 				}
@@ -408,7 +406,7 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 					int vertexFcount = 0, indicesCount = 0;
 					
 					for(int v =0; v < toAddVertexCount; v+=4, indicesCount+=6, ++p){
-						BillboardParticle particle = bufferedParticles[p];
+						BillboardParticle particle = sortedArray[p];
 						float sx = particle.halfWidth * particle.scale, 
 							sy = particle.halfHeight * particle.scale;
 						TMP_V1.set(right).scl(sx);
@@ -427,18 +425,10 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 							putVertex(vertices, vertexFcount, TMP_V6.set(0,0,0).add(TMP_V1).add(TMP_V2), particle,  particle.u2, particle.v); vertexFcount+= currentVertexSize;			
 							putVertex(vertices, vertexFcount, TMP_V6.set(0,0,0).sub(TMP_V1).add(TMP_V2), particle,  particle.u, particle.v); vertexFcount+= currentVertexSize;
 						}
-
-						indices[indicesCount] = (short)v;
-						indices[indicesCount+1] = (short)(v+1);
-						indices[indicesCount+2] = (short)(v+2);
-						indices[indicesCount+3] = (short)(v+2);
-						indices[indicesCount+4] = (short)(v+3);
-						indices[indicesCount+5] = (short)v;
 					}
 
 					renderable.meshPartSize = indicesCount;
 					renderable.mesh.setVertices(vertices, 0, vertexFcount);
-					renderable.mesh.setIndices(indices, 0, indicesCount);	
 					leftVertexCount -= toAddVertexCount;
 					renderables.add(renderable);
 				}
@@ -450,7 +440,7 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 					int vertexFcount = 0, indicesCount = 0;
 
 					for(int v =0; v < toAddVertexCount; v+=4, indicesCount+=6, ++p){
-						BillboardParticle particle = bufferedParticles[p];
+						BillboardParticle particle = sortedArray[p];
 						Vector3 look = TMP_V3.set(camera.position).sub(particle.x, particle.y, particle.z).nor(), //normal
 							right = TMP_V4.set(camera.up).crs(look).nor(), //tangent
 							up = TMP_V5.set(look).crs(right);
@@ -471,17 +461,9 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 							putVertex(vertices, vertexFcount, TMP_V6.set(0,0,0).add(right).add(up), particle,  particle.u2, particle.v); vertexFcount+= currentVertexSize;			
 							putVertex(vertices, vertexFcount, TMP_V6.set(0,0,0).sub(right).add(up), particle,  particle.u, particle.v); vertexFcount+= currentVertexSize;
 						}
-
-						indices[indicesCount] = (short)v;
-						indices[indicesCount+1] = (short)(v+1);
-						indices[indicesCount+2] = (short)(v+2);
-						indices[indicesCount+3] = (short)(v+2);
-						indices[indicesCount+4] = (short)(v+3);
-						indices[indicesCount+5] = (short)v;
 					}
 					renderable.meshPartSize = indicesCount;
 					renderable.mesh.setVertices(vertices, 0, vertexFcount);
-					renderable.mesh.setIndices(indices, 0, indicesCount);	
 					leftVertexCount -= toAddVertexCount;
 					renderables.add(renderable);
 				}
@@ -493,7 +475,7 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 					int vertexFcount = 0, indicesCount = 0;
 
 					for(int v =0; v < toAddVertexCount; v+=4, indicesCount+=6, ++p){
-						BillboardParticle particle = bufferedParticles[p];
+						BillboardParticle particle = sortedArray[p];
 						Vector3 up = TMP_V1.set(particle.velocity).nor(),		
 							look = TMP_V3.set(camera.position).sub(particle.x, particle.y, particle.z).nor(), //normal
 							right = TMP_V4.set(up).crs(look).nor(); //tangent
@@ -517,17 +499,9 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardParti
 							putVertex(vertices, vertexFcount, TMP_V6.set(0,0,0).add(right).add(up), particle,  particle.u2, particle.v); vertexFcount+= CPU_VERTEX_SIZE;			
 							putVertex(vertices, vertexFcount, TMP_V6.set(0,0,0).sub(right).add(up), particle,  particle.u, particle.v); vertexFcount+= CPU_VERTEX_SIZE;
 						}
-
-						indices[indicesCount] = (short)v;
-						indices[indicesCount+1] = (short)(v+1);
-						indices[indicesCount+2] = (short)(v+2);
-						indices[indicesCount+3] = (short)(v+2);
-						indices[indicesCount+4] = (short)(v+3);
-						indices[indicesCount+5] = (short)v;
 					}
 					renderable.meshPartSize = indicesCount;
 					renderable.mesh.setVertices(vertices, 0, vertexFcount);
-					renderable.mesh.setIndices(indices, 0, indicesCount);	
 					leftVertexCount -= toAddVertexCount;
 					renderables.add(renderable);
 				}

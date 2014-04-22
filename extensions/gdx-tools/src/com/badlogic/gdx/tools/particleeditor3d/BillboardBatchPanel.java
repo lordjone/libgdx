@@ -43,28 +43,8 @@ public class BillboardBatchPanel extends EditorPanel<BillboardParticleBatch> {
 			return desc;
 		}
 	}
-	
-	private enum SortWrapper{
-		Far( new BillboardDistanceParticleSorter(), "Far First"),
-		Near( new BillboardDistanceParticleSorter(ParticleSorter.DistanceParticleSorter.COMPARATOR_NEAR_DISTANCE), "Near First"),
-		Younger( new ParticleSorter<BillboardParticle>(ParticleSorter.COMPARATOR_YOUNGER), "Younger First"),
-		Older( new BillboardDistanceParticleSorter(), "Older First");
-		
-		public String desc;
-		public ParticleSorter sorter;
-		SortWrapper(ParticleSorter sorter, String desc){
-			this.sorter = sorter;
-			this.desc = desc;
-		}
-		
-		@Override
-		public String toString () {
-			return desc;
-		}
-	}
-	
 
-	JComboBox alignCombo,sortCombo;
+	JComboBox alignCombo;
 	JCheckBox useGPUBox;
 
 	public BillboardBatchPanel (ParticleEditor3D particleEditor3D, BillboardParticleBatch renderer) {
@@ -92,18 +72,7 @@ public class BillboardBatchPanel extends EditorPanel<BillboardParticleBatch> {
 			public void stateChanged (ChangeEvent event) {
 				editor.getBillboardBatch().setUseGpu(useGPUBox.isSelected());
 			}
-		});
-		
-		//Sort
-		sortCombo = new JComboBox();
-		sortCombo.setModel(new DefaultComboBoxModel(SortWrapper.values()));
-		sortCombo.setSelectedItem(getSortWrapper(renderer.getSorter()));
-		sortCombo.addActionListener(new ActionListener() {
-			public void actionPerformed (ActionEvent event) {
-				SortWrapper sorterWrapper = (SortWrapper)sortCombo.getSelectedItem();
-				editor.getBillboardBatch().setSorter(sorterWrapper.sorter);
-			}
-		});
+		}); 
 		
 		int i =0;
 		contentPanel.add(new JLabel("Align"), new GridBagConstraints(0, i, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE,
@@ -116,17 +85,6 @@ public class BillboardBatchPanel extends EditorPanel<BillboardParticleBatch> {
 			new Insets(6, 0, 0, 0), 0, 0));
 		contentPanel.add(new JLabel("Sort"), new GridBagConstraints(0, i, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE,
 			new Insets(6, 0, 0, 0), 0, 0));
-		contentPanel.add(sortCombo, new GridBagConstraints(1, i++, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.NONE,
-			new Insets(6, 0, 0, 0), 0, 0));
-	}
-
-	private Object getSortWrapper (ParticleSorter<BillboardParticle> sorter) {
-		Class type = sorter.getClass();
-		for(SortWrapper wrapper : SortWrapper.values()){
-			if(wrapper.sorter.getClass().isAssignableFrom(type))
-				return wrapper;
-		}
-		return null;
 	}
 
 	private Object getAlignModeWrapper (AlignMode alignMode) {

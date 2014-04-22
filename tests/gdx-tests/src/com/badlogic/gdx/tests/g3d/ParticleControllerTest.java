@@ -22,6 +22,7 @@ import com.badlogic.gdx.graphics.g3d.particles.BillboardParticle;
 import com.badlogic.gdx.graphics.g3d.particles.ModelInstanceParticle;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleController;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleControllerParticle;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleShader.AlignMode;
 import com.badlogic.gdx.graphics.g3d.particles.PointSpriteParticle;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.controllers.BillboardParticleController;
@@ -155,8 +156,6 @@ public class ParticleControllerTest extends BaseG3dTest{
 		controller.translate(Vector3.tmp.set(5,5,0));
 		controller.rotate(Vector3.X, -90);
 		ui.addAction(new RotationAction(controller, Vector3.X, 360));
-
-		/*
 		//Y
 		controller = createBillboardController(new float[] { 0.12156863f, 1, 0.047058824f}, particleTexture);
 		controller.init();
@@ -174,7 +173,6 @@ public class ParticleControllerTest extends BaseG3dTest{
 		controller.rotate(Vector3.Z, -90);
 		ui.addAction(new RotationAction(controller, Vector3.Z, -360));		
 		emitters.add(controller);
-		*/
 		setupUI();
 	}
 
@@ -191,9 +189,9 @@ public class ParticleControllerTest extends BaseG3dTest{
 		//Emission
 		RegularEmitter emitter = new RegularEmitter();
 		emitter.getDuration().setLow(3000);
-		emitter.getEmission().setHigh(49000);
+		emitter.getEmission().setHigh(900);
 		emitter.getLife().setHigh(1000);
-		emitter.setMaxParticleCount(50000);
+		emitter.setMaxParticleCount(1000);
 
 		//Spawn
 		PointSpawnShapeValue pointSpawnShapeValue = new PointSpawnShapeValue();		

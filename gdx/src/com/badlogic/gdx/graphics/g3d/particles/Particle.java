@@ -10,7 +10,6 @@ public class Particle {
 	public static Quaternion ROTATION_3D_ACCUMULATOR = new Quaternion();
 	public int life, currentLife;
 	public float lifePercent;
-	public float cameraDistance;
 	public VelocityData[] velocityData;
 	public Vector3 velocity;
 }

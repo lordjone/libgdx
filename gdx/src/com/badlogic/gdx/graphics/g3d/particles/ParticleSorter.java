@@ -1,5 +1,6 @@
 package com.badlogic.gdx.graphics.g3d.particles;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 import com.badlogic.gdx.graphics.Camera;
@@ -9,118 +10,132 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 import com.badlogic.gdx.utils.Sort;
+import com.badlogic.gdx.utils.reflect.ArrayReflection;
 
 /** This class is used by {@link ParticleBatch} to sort the particles before render them.*/
 /** @author Inferno */
-public class ParticleSorter<T> {
-	static final Vector3 TMP_V1 = new Vector3();
-	
-	/** older particles will be rendered first */
-	public static final Comparator<Particle> COMPARATOR_OLDER  = new Comparator<Particle>() {
-		@Override
-		public int compare (Particle o1, Particle o2) {
-			return o1.lifePercent < o2.lifePercent ? -1 : o1.lifePercent == o2.lifePercent ? 0 : 1;
-		}
-	};
-	
-	/** younger particles will be rendered first */
-	public static final Comparator<Particle> COMPARATOR_YOUNGER = new Comparator<Particle>() {
-		@Override
-		public int compare (Particle o1, Particle o2) {
-			return o1.lifePercent < o2.lifePercent ? 1 : o1.lifePercent == o2.lifePercent ? 0 : -1;
-		}
-	};
-	
+public abstract class ParticleSorter<T> {
 	public static abstract class DistanceParticleSorter<T> extends ParticleSorter<T>{
-
-		/** particles more distant from the camera will be rendered first */
-		public static final Comparator<Particle> COMPARATOR_FAR_DISTANCE  = new Comparator<Particle>() {
-			@Override
-			public int compare (Particle o1, Particle o2) {
-				return o1.cameraDistance < o2.cameraDistance ? -1 : o1.cameraDistance == o2.cameraDistance ? 0 : 1;
-			}
-		};
 		
-		/** particles nearer to the camera will be rendered first */
-		public static final Comparator<Particle> COMPARATOR_NEAR_DISTANCE  = new Comparator<Particle>() {
-			@Override
-			public int compare (Particle o1, Particle o2) {
-				return o1.cameraDistance < o2.cameraDistance ? 1 : o1.cameraDistance == o2.cameraDistance ? 0 : -1;
-			}
-		};
+		//private long[] indexDistanceArray;
+		protected T[] out;
+		protected float[] distances;
+		protected int[] indices;
+		private int currentSize = 0;
+		private Class<T> type;
 		
-		public DistanceParticleSorter(){
-			super(COMPARATOR_FAR_DISTANCE);
+		public DistanceParticleSorter (Class<T> type) {
+			this.type = type;
 		}
 		
-		public DistanceParticleSorter (Comparator comparator) {
-			super(comparator);
-		}
-		
-
 		@Override
-		public void sort(T[] particles, int count){
-			calculateDistances(particles, count);
-			//qsort((Particle[])particles, 0, count-1);
-			sorter.sort(particles, comparator, 0, count);
+		public void ensureCapacity (int capacity) {
+			if(currentSize < capacity){
+				//indexDistanceArray = new long[capacity];
+				indices = new int[capacity];
+				distances = new float[capacity];
+				out = (T[])ArrayReflection.newInstance(type, capacity);
+				currentSize = capacity;
+			}
 		}
-
+		
+		@Override
+		public T[] sort(T[] particles, int count){
+			calculateDistances(particles, count);
+			qsort(0, count-1);
+			for(int k=0; k < count; ++k){
+				out[k] = particles[indices[k]];
+			}
+			return out;
+		}
+		
 		protected abstract void calculateDistances (T[] particles, int count);
+		
+		public void qsort( int si, int ei){
+			//base case
+			if(ei<=si || si>=ei){}
+
+			else{ 
+				float pivot = distances[si]; 
+				int i = si+1; float tmp; 
+				int tmpIndex, pivotIndex = indices[si];
+
+				//partition array 
+				for(int j = si+1; j<= ei; j++){
+					if(pivot  > distances[j]){
+						//Swap distances
+						tmp = distances[j]; 
+						distances[j] = distances[i]; 
+						distances[i] = tmp;
+						//Swap indices
+						tmpIndex = indices[j]; 
+						indices[j] = indices[i]; 
+						indices[i] = tmpIndex;		                
+						
+						i++; 
+					}
+				}
+
+				//put pivot in right position
+				distances[si] = distances[i-1]; 
+				distances[i-1] = pivot; 
+				indices[si] = indices[i-1]; 
+				indices[i-1] = pivotIndex; 
+
+				//call qsort on right and left sides of pivot
+				qsort(si, i-2); 
+				qsort(i, ei); 
+			}
+		}
 	}
+	
 
 	public static class BillboardDistanceParticleSorter extends DistanceParticleSorter<BillboardParticle>{
-		public BillboardDistanceParticleSorter(){}
-		
-		public BillboardDistanceParticleSorter(Comparator comparator){
-			super(comparator);
+		public BillboardDistanceParticleSorter(){
+			super(BillboardParticle.class);
 		}
 		
 		@Override
 		protected void calculateDistances (BillboardParticle[] particles, int count) {
 			float[] val = camera.view.val;
-			TMP_V1.set(val[Matrix4.M20], val[Matrix4.M21], val[Matrix4.M22]);
+			float cx = val[Matrix4.M20];
+			float cy = val[Matrix4.M21];
+			float cz = val[Matrix4.M22];
 			for(int i=0; i <count; ++i){
 				BillboardParticle particle = particles[i];
-				particles[i].cameraDistance = TMP_V1.dot(particle.x, particle.y, particle.z);
+				distances[i] = cx*particle.x + cy*particle.y +cz*particle.z; //dot
+				indices[i] = i;
 			}
 		}
 	}
 	
 	public static class PointSpriteDistanceParticleSorter extends DistanceParticleSorter<PointSpriteParticle>{
-		public PointSpriteDistanceParticleSorter(){}
 		
-		public PointSpriteDistanceParticleSorter(Comparator comparator){
-			super(comparator);
+		public PointSpriteDistanceParticleSorter () {
+			super(PointSpriteParticle.class);
 		}
+
 		@Override
 		protected void calculateDistances (PointSpriteParticle[] particles, int count) {
 			float[] val = camera.view.val;
-			TMP_V1.set(val[Matrix4.M20], val[Matrix4.M21], val[Matrix4.M22]);
+			float cx = val[Matrix4.M20];
+			float cy = val[Matrix4.M21];
+			float cz = val[Matrix4.M22];
 			for(int i=0; i <count; ++i){
 				PointSpriteParticle particle = particles[i];
-				particles[i].cameraDistance = TMP_V1.dot(particle.x, particle.y, particle.z);
+				distances[i] = cx*particle.x + cy*particle.y +cz*particle.z; //dot
 			}
 		}
 	}
 	
 	protected Camera camera;
-	protected Sort sorter = Sort.instance();
-	protected Comparator comparator;
-	
-	public ParticleSorter(Comparator comparator){
-		this.comparator = comparator;
-	}
-	
-	public void sort(T[] particles, int count){
-		sorter.sort(particles, comparator, 0, count);
-	}
+
+	public void ensureCapacity (int capacity) {}
+		
+	public abstract T[] sort(T[] particles, int count);
 	
 	public void setCamera(Camera camera){
 		this.camera = camera;
-	}
-	
-	public void setComparator(Comparator comparator){
-		this.comparator = comparator;
 	}
 	
 	/*
@@ -153,5 +168,4 @@ public class ParticleSorter<T> {
 	    }
 	}
 	*/
-
 }

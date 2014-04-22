@@ -119,11 +119,12 @@ public class PointSpriteParticleBatch extends BufferedParticleBatch<PointSpriteP
 		vertices[offset + CPU_REGION_OFFSET+3] = particle.v2;
 	}
 	
-	protected void flush(){
+	@Override
+	protected void flush(PointSpriteParticle[] sortedArray){
 		short vo = 0; // the current vertex
 		int fo = 0; // the current offset in the vertex array
 		for (int i = 0; i < bufferedParticlesCount; ++i) {
-			putVertex(vertices, fo, bufferedParticles[i]); 
+			putVertex(vertices, fo, sortedArray[i]); 
 			fo+= CPU_VERTEX_SIZE;
 			++vo;
 		}

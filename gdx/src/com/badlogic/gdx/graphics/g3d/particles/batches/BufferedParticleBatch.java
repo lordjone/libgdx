@@ -46,14 +46,14 @@ public abstract class BufferedParticleBatch<T> implements ParticleBatch<T>{
 				System.arraycopy( controller.particles, 0, bufferedParticles, i, count);
 				i+= count;
 			}
-			sorter.sort(bufferedParticles, bufferedParticlesCount);
-			flush();
+			flush(sorter.sort(bufferedParticles, bufferedParticlesCount));
 		}
 	}
 
 	/**Ensure the batch can contain the passed in amount of particles*/
 	public void ensureCapacity(int capacity){
 		if(bufferedParticles != null && bufferedParticles.length >= capacity) return;
+		sorter.ensureCapacity(capacity);
 		allocParticlesData(capacity);
 	}
 	
@@ -75,7 +75,8 @@ public abstract class BufferedParticleBatch<T> implements ParticleBatch<T>{
 		sorter.setCamera(camera);
 	}
 	
-	/** Sends the data to the gpu */
-	protected abstract void flush();
+	/** Sends the data to the gpu 
+	 * @param sortedArray */
+	protected abstract void flush(T[] sortedArray);
 
 }
