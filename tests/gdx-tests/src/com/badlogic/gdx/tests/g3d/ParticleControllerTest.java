@@ -153,14 +153,14 @@ public class ParticleControllerTest extends BaseG3dTest{
 		controller.init();
 		controller.start();
 		emitters.add(controller);
-		controller.translate(Vector3.tmp.set(5,5,0));
+		controller.translate(tmpVector.set(5,5,0));
 		controller.rotate(Vector3.X, -90);
 		ui.addAction(new RotationAction(controller, Vector3.X, 360));
 		//Y
 		controller = createBillboardController(new float[] { 0.12156863f, 1, 0.047058824f}, particleTexture);
 		controller.init();
 		controller.start();
-		controller.translate(Vector3.tmp.set(0,5,-5));
+		controller.translate(tmpVector.set(0,5,-5));
 		controller.rotate(Vector3.Z, -90);
 		ui.addAction(new RotationAction(controller, Vector3.Y, -360));
 		emitters.add(controller);
@@ -169,7 +169,7 @@ public class ParticleControllerTest extends BaseG3dTest{
 		controller = createBillboardController(new float[] {0.12156863f, 0.047058824f, 1}, particleTexture);
 		controller.init();
 		controller.start();
-		controller.translate(Vector3.tmp.set(0,5,5));
+		controller.translate(tmpVector.set(0,5,5));
 		controller.rotate(Vector3.Z, -90);
 		ui.addAction(new RotationAction(controller, Vector3.Z, -360));		
 		emitters.add(controller);
