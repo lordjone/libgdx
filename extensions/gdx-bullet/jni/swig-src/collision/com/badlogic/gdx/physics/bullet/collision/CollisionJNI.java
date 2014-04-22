@@ -1582,6 +1582,20 @@ public class CollisionJNI {
   public final static native void btCollisionObjectWrapper_index_set(long jarg1, btCollisionObjectWrapper jarg1_, int jarg2);
   public final static native int btCollisionObjectWrapper_index_get(long jarg1, btCollisionObjectWrapper jarg1_);
   public final static native long btCollisionObjectWrapper_getCollisionShape(long jarg1, btCollisionObjectWrapper jarg1_);
+  public final static native long new_CollisionObjectWrapper__SWIG_0(long jarg1, btCollisionObjectWrapper jarg1_, long jarg2, btCollisionShape jarg2_, long jarg3, btCollisionObject jarg3_, Matrix4 jarg4, int jarg5, int jarg6);
+  public final static native long new_CollisionObjectWrapper__SWIG_1(long jarg1, btCollisionObjectWrapper jarg1_, long jarg2, btCollisionShape jarg2_, long jarg3, btCollisionObject jarg3_, Matrix4 jarg4, int jarg5);
+  public final static native long new_CollisionObjectWrapper__SWIG_2(long jarg1, btCollisionObjectWrapper jarg1_, long jarg2, btCollisionShape jarg2_, long jarg3, btCollisionObject jarg3_, Matrix4 jarg4);
+  public final static native long new_CollisionObjectWrapper__SWIG_3(long jarg1, btCollisionShape jarg1_, long jarg2, btCollisionObject jarg2_, Matrix4 jarg3, int jarg4, int jarg5);
+  public final static native long new_CollisionObjectWrapper__SWIG_4(long jarg1, btCollisionShape jarg1_, long jarg2, btCollisionObject jarg2_, Matrix4 jarg3, int jarg4);
+  public final static native long new_CollisionObjectWrapper__SWIG_5(long jarg1, btCollisionShape jarg1_, long jarg2, btCollisionObject jarg2_, Matrix4 jarg3);
+  public final static native long new_CollisionObjectWrapper__SWIG_6(long jarg1, btCollisionObjectWrapper jarg1_, long jarg2, btCollisionObject jarg2_, int jarg3, int jarg4);
+  public final static native long new_CollisionObjectWrapper__SWIG_7(long jarg1, btCollisionObjectWrapper jarg1_, long jarg2, btCollisionObject jarg2_, int jarg3);
+  public final static native long new_CollisionObjectWrapper__SWIG_8(long jarg1, btCollisionObjectWrapper jarg1_, long jarg2, btCollisionObject jarg2_);
+  public final static native long new_CollisionObjectWrapper__SWIG_9(long jarg1, btCollisionObject jarg1_, int jarg2, int jarg3);
+  public final static native long new_CollisionObjectWrapper__SWIG_10(long jarg1, btCollisionObject jarg1_, int jarg2);
+  public final static native long new_CollisionObjectWrapper__SWIG_11(long jarg1, btCollisionObject jarg1_);
+  public final static native long CollisionObjectWrapper_getWrapper(long jarg1, CollisionObjectWrapper jarg1_);
+  public final static native void delete_CollisionObjectWrapper(long jarg1);
   public final static native long new_btEmptyAlgorithm(long jarg1, btCollisionAlgorithmConstructionInfo jarg1_);
   public final static native long btEmptyAlgorithm_CreateFunc_CreateCollisionAlgorithm(long jarg1, btEmptyAlgorithm.CreateFunc jarg1_, long jarg2, btCollisionAlgorithmConstructionInfo jarg2_, long jarg3, btCollisionObjectWrapper jarg3_, long jarg4, btCollisionObjectWrapper jarg4_);
   public final static native long new_btEmptyAlgorithm_CreateFunc();
@@ -2379,6 +2393,14 @@ public class CollisionJNI {
   public final static native String btMultiSphereShapeData_padding_get(long jarg1, btMultiSphereShapeData jarg1_);
   public final static native long new_btMultiSphereShapeData();
   public final static native void delete_btMultiSphereShapeData(long jarg1);
+  public final static native long new_CustomCollisionDispatcher(long jarg1, btCollisionConfiguration jarg1_);
+  public final static native boolean CustomCollisionDispatcher_needsCollision(long jarg1, CustomCollisionDispatcher jarg1_, long jarg2, btCollisionObject jarg2_, long jarg3, btCollisionObject jarg3_);
+  public final static native boolean CustomCollisionDispatcher_needsCollisionSwigExplicitCustomCollisionDispatcher(long jarg1, CustomCollisionDispatcher jarg1_, long jarg2, btCollisionObject jarg2_, long jarg3, btCollisionObject jarg3_);
+  public final static native boolean CustomCollisionDispatcher_needsResponse(long jarg1, CustomCollisionDispatcher jarg1_, long jarg2, btCollisionObject jarg2_, long jarg3, btCollisionObject jarg3_);
+  public final static native boolean CustomCollisionDispatcher_needsResponseSwigExplicitCustomCollisionDispatcher(long jarg1, CustomCollisionDispatcher jarg1_, long jarg2, btCollisionObject jarg2_, long jarg3, btCollisionObject jarg3_);
+  public final static native void delete_CustomCollisionDispatcher(long jarg1);
+  public final static native void CustomCollisionDispatcher_director_connect(CustomCollisionDispatcher obj, long cptr, boolean mem_own, boolean weak_global);
+  public final static native void CustomCollisionDispatcher_change_ownership(CustomCollisionDispatcher obj, long cptr, boolean take_or_release);
   public final static native long new_ContactListener(boolean jarg1);
   public final static native void delete_ContactListener(long jarg1);
   public final static native void ContactListener_enable(long jarg1, ContactListener jarg1_);
@@ -2555,6 +2577,7 @@ public class CollisionJNI {
   public final static native long btGjkEpaPenetrationDepthSolver_SWIGUpcast(long jarg1);
   public final static native long btPointCollector_SWIGUpcast(long jarg1);
   public final static native long btMultiSphereShape_SWIGUpcast(long jarg1);
+  public final static native long CustomCollisionDispatcher_SWIGUpcast(long jarg1);
 
   public static boolean SwigDirector_btBroadphaseAabbCallback_process(btBroadphaseAabbCallback self, long proxy) {
     return self.process((proxy == 0) ? null : new btBroadphaseProxy(proxy, false));
@@ -2645,6 +2668,12 @@ public class CollisionJNI {
   }
   public static float SwigDirector_btTriangleConvexcastCallback_reportHit(btTriangleConvexcastCallback self, Vector3 hitNormalLocal, Vector3 hitPointLocal, float hitFraction, int partId, int triangleIndex) {
     return self.reportHit(hitNormalLocal, hitPointLocal, hitFraction, partId, triangleIndex);
+  }
+  public static boolean SwigDirector_CustomCollisionDispatcher_needsCollision(CustomCollisionDispatcher self, long body0, long body1) {
+    return self.needsCollision(btCollisionObject.getInstance(body0, false), btCollisionObject.getInstance(body1, false));
+  }
+  public static boolean SwigDirector_CustomCollisionDispatcher_needsResponse(CustomCollisionDispatcher self, long body0, long body1) {
+    return self.needsResponse(btCollisionObject.getInstance(body0, false), btCollisionObject.getInstance(body1, false));
   }
   public static boolean SwigDirector_ContactListener_onContactAdded__SWIG_0(ContactListener self, btManifoldPoint cp, btCollisionObjectWrapper colObj0Wrap, int partId0, int index0, btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
     return self.onContactAdded(cp, colObj0Wrap, partId0, index0, colObj1Wrap, partId1, index1);

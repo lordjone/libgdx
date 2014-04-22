@@ -9,6 +9,7 @@ gwt {
     src = files(file("src/")) // Needs to be in front of "modules" below.
     modules '%PACKAGE%.GdxDefinition'
     devModules '%PACKAGE%.GdxDefinitionSuperdev'
+    project.webAppDirName = 'webapp'
 
     compiler {
         strict = true;
@@ -57,5 +58,5 @@ sourceSets.main.compileClasspath += files(project(':core').sourceSets.main.allJa
 
 
 eclipse.project {
-    name = appName + "-gwt"
+    name = appName + "-html"
 }
