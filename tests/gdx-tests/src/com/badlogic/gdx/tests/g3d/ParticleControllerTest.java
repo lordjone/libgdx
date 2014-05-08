@@ -18,56 +18,16 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.particles.BillboardParticle;
-import com.badlogic.gdx.graphics.g3d.particles.ModelInstanceParticle;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleController;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleControllerParticle;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleShader.AlignMode;
-import com.badlogic.gdx.graphics.g3d.particles.PointSpriteParticle;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
-import com.badlogic.gdx.graphics.g3d.particles.controllers.BillboardParticleController;
-import com.badlogic.gdx.graphics.g3d.particles.controllers.ModelInstanceParticleController;
-import com.badlogic.gdx.graphics.g3d.particles.controllers.ParticleControllerParticleController;
-import com.badlogic.gdx.graphics.g3d.particles.controllers.PointSpriteParticleController;
 import com.badlogic.gdx.graphics.g3d.particles.emitters.RegularEmitter;
 import com.badlogic.gdx.graphics.g3d.particles.influencers.ColorInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.RandomColorInfluencer;
 import com.badlogic.gdx.graphics.g3d.particles.influencers.RegionInfluencer;
 import com.badlogic.gdx.graphics.g3d.particles.influencers.ScaleInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.SpawnShapeInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.VelocityInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.ColorInfluencer.BillboardColorInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.ColorInfluencer.PointSpriteColorInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.RandomColorInfluencer.ModelInstanceRandomColorInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.ScaleInfluencer.*;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.SpawnShapeInfluencer.BillboardSpawnInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.SpawnShapeInfluencer.ModelInstanceSpawnInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.SpawnShapeInfluencer.ParticleControllerSpawnInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.SpawnShapeInfluencer.PointSpriteSpawnInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.VelocityInfluencer.BillboardVelocityInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.VelocityInfluencer.ModelInstanceVelocityInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.VelocityInfluencer.ParticleControllerVelocityInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.VelocityInfluencer.PointSpriteVelocityInfluencer;
-import com.badlogic.gdx.graphics.g3d.particles.values.AngularVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.EllipseSpawnShapeValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.LineSpawnShapeValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.MeshSpawnShapeValue;
+import com.badlogic.gdx.graphics.g3d.particles.influencers.SpawnInfluencer;
+import com.badlogic.gdx.graphics.g3d.particles.influencers.ColorInfluencer.Single;
+import com.badlogic.gdx.graphics.g3d.particles.renderers.BillboardRenderer;
 import com.badlogic.gdx.graphics.g3d.particles.values.PointSpawnShapeValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.ScaledNumericValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.SpawnShapeValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.PrimitiveSpawnShapeValue.SpawnSide;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.BillboardBrownianVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.BillboardPolarVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.BillboardRotationVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.BillboardWeightVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.ModelInstanceBrownianVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.ModelInstanceCentripetalVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.ModelInstanceRotationVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.ParticleControllerCentripetalVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.ParticleControllerRotationVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.PointPolarVelocityValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.VelocityValues.PointRotationVelocityValue;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector3;
@@ -156,6 +116,7 @@ public class ParticleControllerTest extends BaseG3dTest{
 		controller.translate(tmpVector.set(5,5,0));
 		controller.rotate(Vector3.X, -90);
 		ui.addAction(new RotationAction(controller, Vector3.X, 360));
+		/*
 		//Y
 		controller = createBillboardController(new float[] { 0.12156863f, 1, 0.047058824f}, particleTexture);
 		controller.init();
@@ -173,6 +134,7 @@ public class ParticleControllerTest extends BaseG3dTest{
 		controller.rotate(Vector3.Z, -90);
 		ui.addAction(new RotationAction(controller, Vector3.Z, -360));		
 		emitters.add(controller);
+		*/
 		setupUI();
 	}
 
@@ -189,9 +151,9 @@ public class ParticleControllerTest extends BaseG3dTest{
 		//Emission
 		RegularEmitter emitter = new RegularEmitter();
 		emitter.getDuration().setLow(3000);
-		emitter.getEmission().setHigh(900);
+		emitter.getEmission().setHigh(2900);
 		emitter.getLife().setHigh(1000);
-		emitter.setMaxParticleCount(1000);
+		emitter.setMaxParticleCount(3000);
 
 		//Spawn
 		PointSpawnShapeValue pointSpawnShapeValue = new PointSpawnShapeValue();		
@@ -201,13 +163,13 @@ public class ParticleControllerTest extends BaseG3dTest{
 		pointSpawnShapeValue.yOffsetValue.setActive(true);
 		pointSpawnShapeValue.zOffsetValue.setLow(0, 1f);
 		pointSpawnShapeValue.zOffsetValue.setActive(true);
-		BillboardSpawnInfluencer spawnSource = new BillboardSpawnInfluencer(pointSpawnShapeValue);
+		SpawnInfluencer spawnSource = new SpawnInfluencer(pointSpawnShapeValue);
 
-		BillboardScaleInfluencer scaleInfluencer = new BillboardScaleInfluencer();
-		scaleInfluencer.scaleValue.setHigh(1f);
+		ScaleInfluencer scaleInfluencer = new ScaleInfluencer();
+		scaleInfluencer.value.setHigh(1f);
 
 		//Color
-		BillboardColorInfluencer colorInfluencer = new BillboardColorInfluencer();
+		ColorInfluencer.Single colorInfluencer = new ColorInfluencer.Single();
 		colorInfluencer.colorValue.setColors(new float[] {colors[0], colors[1], colors[2], 0,0,0});
 		colorInfluencer.colorValue.setTimeline(new float[] {0, 1});
 		colorInfluencer.alphaValue.setHigh(1);
@@ -222,11 +184,11 @@ public class ParticleControllerTest extends BaseG3dTest{
 		velocityInfluencer.velocities.add(velocityValue);
 		*/
 		
-		return new BillboardParticleController("Billboard Controller", emitter, billboardParticleBatch, 
-			new RegionInfluencer.BillboardSingleRegionInfluencer(particleTexture),
+		return new ParticleController("Billboard Controller", emitter, new BillboardRenderer(billboardParticleBatch),
+			new RegionInfluencer.Single(particleTexture),
 			spawnSource,
 			//velocityInfluencer,
-			scaleInfluencer,
+			//scaleInfluencer,
 			colorInfluencer
 			);
 	}
@@ -243,7 +205,7 @@ public class ParticleControllerTest extends BaseG3dTest{
 
 			billboardParticleBatch.begin();
 			for (ParticleController controller : emitters){
-				controller.update(delta);
+				controller.update();
 				controller.draw();
 			}
 			billboardParticleBatch.end();
