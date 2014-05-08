@@ -106,7 +106,7 @@ public class ParticleChannels {
 	public static final ChannelDescriptor Scale = new ChannelDescriptor(newGlobalId(), float.class, 1);
 	public static final ChannelDescriptor ModelInstance = new ChannelDescriptor(newGlobalId(), ModelInstance.class, 1);
 	public static final ChannelDescriptor ParticleController = new ChannelDescriptor(newGlobalId(), ParticleController.class, 1);
-	public static final ChannelDescriptor Acceleration = new ChannelDescriptor(newGlobalId(), float.class, 3); //gl units/sö2
+	public static final ChannelDescriptor Acceleration = new ChannelDescriptor(newGlobalId(), float.class, 3); //gl units/s2
 	public static final ChannelDescriptor AngularVelocity2D = new ChannelDescriptor(newGlobalId(), float.class, 1);
 	public static final ChannelDescriptor AngularVelocity3D = new ChannelDescriptor(newGlobalId(), float.class, 3);
 	public static final ChannelDescriptor Interpolation = new ChannelDescriptor(-1, float.class, 2);

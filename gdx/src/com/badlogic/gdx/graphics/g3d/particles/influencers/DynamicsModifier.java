@@ -247,7 +247,7 @@ public abstract class DynamicsModifier extends Influencer{
 			//Algorithm 2
 			//Consider a channel which represent a sort of angular momentum L  (r, v)
 			//Sum each L for each rotation 
-			//Multiply sum by constant quantity k = m*Iö-1 , m could be optional while I is constant and can be calculated at start 
+			//Multiply sum by constant quantity k = m*I_to(-1) , m could be optional while I is constant and can be calculated at start 
 			//Update rotation			
 			
 			//Algorithm 3
