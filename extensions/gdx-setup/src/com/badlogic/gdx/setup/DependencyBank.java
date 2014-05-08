@@ -7,17 +7,22 @@ import java.util.LinkedHashMap;
 public class DependencyBank {
 
 	//Versions
-	static String libgdxVersion = "1.0.0";
-	static String roboVMVersion = "0.0.11";
+	static String libgdxVersion = "1.0.1";
+	//Temporary snapshot version, we need a more dynamic solution for pointing to the latest nightly
+	static String libgdxNightlyVersion = "1.0.2-SNAPSHOT";
+	static String roboVMVersion = "0.0.12";
+	static String buildToolsVersion = "19.0.3";
+	static String androidAPILevel = "19";
 
 	//Repositories
 	static String gwtPluginUrl = "https://github.com/steffenschaefer/gwt-gradle-plugin/raw/maven-repo/";
 	static String libGDXSnapshotsUrl = "https://oss.sonatype.org/content/repositories/snapshots/";
+	static String libGDXReleaseUrl = "https://oss.sonatype.org/content/repositories/releases/";
 
 	//Project plugins
-	static String gwtPluginImport = "de.richsource.gradle.plugins:gwt-gradle-plugin:0.3";
-	static String androidPluginImport = "com.android.tools.build:gradle:0.9+";
-	static String roboVMPluginImport = "com.github.jtakakura:gradle-robovm-plugin:0.0.7";
+	static String gwtPluginImport = "de.richsource.gradle.plugins:gwt-gradle-plugin:0.4";
+	static String androidPluginImport = "com.android.tools.build:gradle:0.10+";
+	static String roboVMPluginImport = "com.github.jtakakura:gradle-robovm-plugin:0.0.8";
 
 	HashMap<ProjectDependency, Dependency> gdxDependencies = new HashMap<ProjectDependency, Dependency>();
 	LinkedHashMap<ProjectDependency, String[]> gwtInheritances = new LinkedHashMap<ProjectDependency, String[]>();
@@ -57,7 +62,7 @@ public class DependencyBank {
 		GDX(
 			new String[]{"com.badlogicgames.gdx:gdx:$gdxVersion"},
 			new String[]{"com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"},
-			new String[]{"com.badlogicgames.gdx:gdx-backend-android:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"},
+			new String[]{"com.badlogicgames.gdx:gdx-backend-android:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"},
 			new String[]{"org.robovm:robovm-rt:${roboVMVersion}", "org.robovm:robovm-cocoatouch:${roboVMVersion}", "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion", "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"},
 			new String[]{"com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion", "com.badlogicgames.gdx:gdx:$gdxVersion:sources", "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"}
 		),
@@ -76,17 +81,17 @@ public class DependencyBank {
 			null
 		),
 		TOOLS(
-			null,
+			new String[]{},
 			new String[]{"com.badlogicgames.gdx:gdx-tools:$gdxVersion"},
-			null,
-			null,
-			null
+			new String[]{},
+			new String[]{},
+			new String[]{}
 		),
 		CONTROLLERS(
 			new String[]{"com.badlogicgames.gdx:gdx-controllers:$gdxVersion"},
 			new String[]{"com.badlogicgames.gdx:gdx-controllers-desktop:$gdxVersion", "com.badlogicgames.gdx:gdx-controllers-platform:$gdxVersion:natives-desktop"},
 			new String[]{"com.badlogicgames.gdx:gdx-controllers:$gdxVersion", "com.badlogicgames.gdx:gdx-controllers-android:$gdxVersion"},
-			new String[] { }, // works on iOS but never reports any controllers :)
+			new String[] {}, // works on iOS but never reports any controllers :)
 			new String[]{"com.badlogicgames.gdx:gdx-controllers:$gdxVersion:sources", "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion", "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion:sources"}
 		),
 		BOX2D(

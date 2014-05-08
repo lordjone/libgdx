@@ -15,18 +15,58 @@
  ******************************************************************************/
 package com.badlogic.gdx.setup;
 
-import java.awt.*;
-import java.awt.event.*;
+import static java.awt.GridBagConstraints.*;
+
+import com.badlogic.gdx.setup.DependencyBank.ProjectDependency;
+import com.badlogic.gdx.setup.DependencyBank.ProjectType;
+import com.badlogic.gdx.setup.Executor.CharCallback;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.EventQueue;
+import java.awt.FileDialog;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -34,12 +74,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-
-import com.badlogic.gdx.setup.DependencyBank.ProjectDependency;
-import com.badlogic.gdx.setup.DependencyBank.ProjectType;
-import com.badlogic.gdx.setup.Executor.CharCallback;
-
-import static java.awt.GridBagConstraints.*;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.plaf.basic.BasicComboBoxUI;
 
 @SuppressWarnings("serial")
 public class GdxSetupUI extends JFrame {
@@ -107,17 +144,32 @@ public class GdxSetupUI extends JFrame {
 		}
 
 		final String sdkLocation = ui.form.sdkLocationText.getText().trim();
-		if (sdkLocation.length() == 0) {
+		if (sdkLocation.length() == 0 && modules.contains(ProjectType.ANDROID)) {
 			JOptionPane.showMessageDialog(this, "Please enter your Android SDK's path");
 			return;
 		}
-		if (!GdxSetup.isSdkLocationValid(sdkLocation)) {
+		if (!GdxSetup.isSdkLocationValid(sdkLocation) && modules.contains(ProjectType.ANDROID)) {
 			JOptionPane
 					.showMessageDialog(this,
 							"Your Android SDK path doesn't contain an SDK! Please install the Android SDK, including all platforms and build tools!");
 			return;
 		}
 
+		if (!GdxSetup.isSdkUpToDate(sdkLocation) && modules.contains(ProjectType.ANDROID)) {
+			JOptionPane.showMessageDialog(this, "Please update your Android SDK, you need: \nAndroid API " + DependencyBank.androidAPILevel + "\nAndroid Build Tools " + DependencyBank.buildToolsVersion);
+		}
+
+		if (!GdxSetup.isEmptyDirectory(destination)) {
+			int value = JOptionPane.showConfirmDialog(this, "The destination is not empty, do you want to overwrite?", "Warning!", JOptionPane.YES_NO_OPTION);
+			if (value == 1) {
+				return;
+			}
+		}
+
+		String selectedVersion = (String)ui.form.versionButton.getSelectedItem();
+		if (selectedVersion.equals("Nightlies")) {
+			DependencyBank.libgdxVersion = DependencyBank.libgdxNightlyVersion;
+		}
 		List<String> incompatList = builder.buildProject(modules, dependencies);
 		if (incompatList.size() == 0) {
 			try {
@@ -193,7 +245,7 @@ public class GdxSetupUI extends JFrame {
 		}.start();
 	}
 
-	void log(final char c) {
+	void log (final char c) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run () {
 				ui.textArea.append("" + c);
@@ -347,6 +399,9 @@ public class GdxSetupUI extends JFrame {
 		SetupButton sdkLocationButton = new SetupButton("Browse");
 
 		JPanel subProjectsPanel = new JPanel(new GridLayout());
+		JLabel versionLabel = new JLabel("LibGDX Version");
+		JComboBox versionButton = new JComboBox(new String[] {"Release " + DependencyBank.libgdxVersion, "Nightlies"});
+		JLabel nightlyWarning = new JLabel("Nightlies are development builds, be aware!");
 		JLabel projectsLabel = new JLabel("Sub Projects");
 		JLabel extensionsLabel = new JLabel("Extensions");
 		List<JPanel> extensionsPanels = new ArrayList<JPanel>();
@@ -358,12 +413,40 @@ public class GdxSetupUI extends JFrame {
 		}
 
 		private void uiStyle() {
+			nameText.setCaretColor(Color.WHITE);
+			packageText.setCaretColor(Color.WHITE);
+			gameClassText.setCaretColor(Color.WHITE);
+			destinationText.setCaretColor(Color.WHITE);
+			sdkLocationText.setCaretColor(Color.WHITE);
+
 			nameLabel.setForeground(Color.WHITE);
 			packageLabel.setForeground(Color.WHITE);
 			gameClassLabel.setForeground(Color.WHITE);
 			destinationLabel.setForeground(Color.WHITE);
 			sdkLocationLabel.setForeground(Color.WHITE);
+			sdkLocationText.setDisabledTextColor(Color.BLACK);
 
+			versionLabel.setForeground(new Color(255, 20, 20));
+			UIManager.put("ComboBox.selectionBackground", new ColorUIResource(new Color(70, 70, 70)));
+			UIManager.put("ComboBox.selectionForeground", new ColorUIResource(Color.WHITE));
+			versionButton.updateUI();
+			versionButton.setForeground(new Color(255, 255, 255));
+			versionButton.setBackground(new Color(20, 20, 20));
+			versionButton.setPrototypeDisplayValue("I am a prototype");
+			versionButton.setUI(new BasicComboBoxUI() {
+				@Override
+				protected JButton createArrowButton () {
+					return new BasicArrowButton(
+							BasicArrowButton.SOUTH,
+							new Color(0, 0, 0),
+							new Color(0, 0, 0),
+							new Color(100, 100, 100),
+							new Color(100, 100, 100));
+				}
+			});
+
+			nightlyWarning.setForeground(new Color(200, 20, 20));
+			nightlyWarning.setVisible(false);
 			projectsLabel.setForeground(new Color(200, 20, 20));
 			extensionsLabel.setForeground(new Color(200, 20, 20));
 
@@ -399,6 +482,24 @@ public class GdxSetupUI extends JFrame {
 			add(sdkLocationText, new GridBagConstraints(1, 4, 1, 1, 1, 0, CENTER, HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 			add(sdkLocationButton, new GridBagConstraints(2, 4, 1, 1, 0, 0, CENTER, NONE, new Insets(0, 6, 0, 0), 0, 0));
 
+			add(versionLabel, new GridBagConstraints(0, 5, 1, 1, 0, 0, WEST, WEST, new Insets(20, 0, 0, 0), 0, 0));
+			add(versionButton, new GridBagConstraints(1, 5, 1, 1, 0, 0, WEST, WEST, new Insets(20, 20, 0, 0), 0, 0));
+			add(nightlyWarning, new GridBagConstraints(1, 5, 1, 1, 0, 0, WEST, WEST, new Insets(20, 200, 0, 0), 0, 0));
+
+			versionButton.addItemListener(new ItemListener() {
+				@Override
+				public void itemStateChanged (ItemEvent e) {
+					JComboBox list = (JComboBox) e.getSource();
+					if (list.getSelectedItem().equals("Nightlies")) {
+						nightlyWarning.setVisible(true);
+					} else {
+						if (nightlyWarning.isVisible()) {
+							nightlyWarning.setVisible(false);
+						}
+					}
+				}
+			});
+
 			for (final ProjectType projectType : ProjectType.values()) {
 				if (projectType.equals(ProjectType.CORE)) {
 					continue;
@@ -411,6 +512,9 @@ public class GdxSetupUI extends JFrame {
 					@Override
 					public void itemStateChanged(ItemEvent e) {
 						SetupCheckBox box = (SetupCheckBox) e.getSource();
+						if (projectType.equals(ProjectType.ANDROID)) {
+							sdkLocationText.setEnabled(box.isSelected());
+						}
 						if (box.isSelected()) {
 							modules.add(projectType);
 						} else {
@@ -422,8 +526,8 @@ public class GdxSetupUI extends JFrame {
 				});
 			}
 
-			add(projectsLabel, new GridBagConstraints(0, 5, 1, 1, 0, 0, WEST, WEST, new Insets(20, 0, 0, 0), 0, 0));
-			add(subProjectsPanel, new GridBagConstraints(0, 6, 3, 1, 0, 0, CENTER, HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+			add(projectsLabel, new GridBagConstraints(0, 6, 1, 1, 0, 0, WEST, WEST, new Insets(20, 0, 0, 0), 0, 0));
+			add(subProjectsPanel, new GridBagConstraints(0, 7, 3, 1, 0, 0, CENTER, HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
 
 			int depCounter = 0;
 
@@ -465,8 +569,8 @@ public class GdxSetupUI extends JFrame {
 				extensionsPanels.add(extensionPanel);
 			}
 
-			add(extensionsLabel, new GridBagConstraints(0, 7, 1, 1, 0, 0, WEST, WEST, new Insets(20, 0, 0, 0), 0, 0));
-			int rowCounter = 8;
+			add(extensionsLabel, new GridBagConstraints(0, 8, 1, 1, 0, 0, WEST, WEST, new Insets(20, 0, 0, 0), 0, 0));
+			int rowCounter = 9;
 			for (JPanel extensionsPanel : extensionsPanels) {
 				add(extensionsPanel, new GridBagConstraints(0, rowCounter, 3, 1, 0, 0, CENTER, HORIZONTAL, new Insets(5, 0, 0, 0), 0, 0));
 				rowCounter++;
