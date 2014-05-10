@@ -631,9 +631,9 @@ public class FlameMain extends JFrame implements AssetErrorListener {
 		
 		//Render
 		public PerspectiveCamera worldCamera;
-		private boolean isDrawXYZ, isDrawXZPlane;
+		private boolean isDrawXYZ, isDrawXZPlane, isDrawXYPlane;
 		private Array<Model> models;
-		private ModelInstance xyzInstance, xzPlaneInstance;
+		private ModelInstance xyzInstance, xzPlaneInstance, xyPlaneInstance;
 		private Environment environment;
 		private ModelBatch modelBatch;
 		PointSpriteParticleBatch pointSpriteBatch;
@@ -688,6 +688,8 @@ public class FlameMain extends JFrame implements AssetErrorListener {
 			models.add(planeModel);
 			xyzInstance = new ModelInstance(xyzModel);
 			xzPlaneInstance = new ModelInstance(planeModel);
+			xyPlaneInstance = new ModelInstance(planeModel);
+			xyPlaneInstance.transform.rotate(1f, 0f, 0f, 90f);
 
 			setDrawXYZ(true);
 			setDrawXZPlane(true);
@@ -785,6 +787,7 @@ public class FlameMain extends JFrame implements AssetErrorListener {
 			modelBatch.begin(worldCamera);
 			if(isDrawXYZ) modelBatch.render(xyzInstance);
 			if(isDrawXZPlane) modelBatch.render(xzPlaneInstance);
+			if(isDrawXYPlane) modelBatch.render(xyPlaneInstance);
 			particleSystem.begin();
 			particleSystem.draw();
 			particleSystem.end();
@@ -822,6 +825,16 @@ public class FlameMain extends JFrame implements AssetErrorListener {
 		public boolean IsDrawXZPlane() 
 		{
 			return isDrawXZPlane;
+		}
+		
+		public void setDrawXYPlane(boolean isDraw) 
+		{
+			isDrawXYPlane = isDraw;
+		}
+
+		public boolean IsDrawXYPlane() 
+		{
+			return isDrawXYPlane;
 		}
 	}
 

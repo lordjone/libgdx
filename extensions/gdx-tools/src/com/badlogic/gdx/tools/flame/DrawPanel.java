@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 public class DrawPanel extends EditorPanel 
 {
 	JCheckBox 	drawXYZCheckBox,
-				drawXZPlaneBox;
+				drawXZPlaneBox, drawXYPlaneBox;
 
 	public DrawPanel (FlameMain editor, String name, String description) {
 		super(editor, name, description);
@@ -39,6 +39,13 @@ public class DrawPanel extends EditorPanel
 		contentPanel.add(drawXZPlaneBox, new GridBagConstraints(1, 2, 1, 1, 1, 0, GridBagConstraints.WEST,
 				GridBagConstraints.NONE, new Insets(6, 6, 0, 0), 0, 0));
 		
+		//XY Plane
+		contentPanel.add(new JLabel("XY Plane:"), new GridBagConstraints(0, 3, 1, 1, 0, 0, GridBagConstraints.EAST, GridBagConstraints.NONE,
+				new Insets(6, 0, 0, 0), 0, 0));
+		drawXYPlaneBox = new JCheckBox();
+		contentPanel.add(drawXYPlaneBox, new GridBagConstraints(1, 3, 1, 1, 1, 0, GridBagConstraints.WEST,
+				GridBagConstraints.NONE, new Insets(6, 6, 0, 0), 0, 0));
+		
 		//Listeners
 		drawXYZCheckBox.addActionListener(new ActionListener() {
 			public void actionPerformed (ActionEvent event) {
@@ -54,5 +61,10 @@ public class DrawPanel extends EditorPanel
 		});
 		drawXZPlaneBox.setSelected(editor.getRenderer().IsDrawXZPlane());
 		
+		drawXYPlaneBox.addActionListener(new ActionListener() {
+			public void actionPerformed (ActionEvent event) {
+				DrawPanel.this.editor.getRenderer().setDrawXYPlane(drawXYPlaneBox.isSelected());
+			}
+		});
 	}
 }
