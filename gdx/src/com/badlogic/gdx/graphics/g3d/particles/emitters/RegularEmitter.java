@@ -19,7 +19,7 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 	protected int lifeOffset, lifeOffsetDiff;
 	protected int life, lifeDiff;
 	protected float duration, delay, durationTimer, delayTimer;
-	private boolean continuous, emissionCycleRunning;
+	private boolean continuous, newParticlesEmissionAllowed, newEmissionCyclesAllowed;
 	
 	private FloatChannel lifeChannel;
 
@@ -34,7 +34,8 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		emissionValue.setActive(true);
 		lifeValue.setActive(true);
 		continuous = true;
-		emissionCycleRunning = true;
+		newParticlesEmissionAllowed = true;
+		newEmissionCyclesAllowed = true;
 	}
 	
 	public RegularEmitter (RegularEmitter regularEmitter) {
@@ -102,14 +103,14 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		if (delayTimer < delay) {
 			delayTimer += deltaMillis;
 		} else {
-			boolean emitNextCycle = emissionCycleRunning;
+			boolean emitNextCycle = newParticlesEmissionAllowed;
 			//End check
 			if (durationTimer < duration) {
 				durationTimer += deltaMillis;
 				percent = durationTimer / (float)duration;
 			}
 			else {
-				if (continuous && emitNextCycle) 
+				if (continuous && emitNextCycle && newEmissionCyclesAllowed) 
 					controller.start();
 				else 
 					emitNextCycle = false;
@@ -189,19 +190,35 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 	}
 	
 	/**
-	 * Irrelevant on non-continuous emitters. 
-	 * @return true if continuous emitter is supposed to run subsequent particles emission cycles, false otherwise
+	 * Checks if new particles emission is allowed. 
+	 * @return true if emitter is allowed to emit more particles
 	 */
-	public boolean isEmissionCycleRunning(){
-		return emissionCycleRunning;
+	public boolean isNewParticlesEmissionAllowed(){
+		return newParticlesEmissionAllowed;
 	}
 
 	/**
-	 * Doesn't have any effect on non-continuous emitters.
-	 * @param emissionCycleRunning true to allow or false to disallow subsequent particles emission cycles on continuous emitters
+	 * Sets whether emitter is allowed to emit new particles. Will not affect already emitted particles which will live their life until their end.
+	 * @param newParticlesEmissionAllowed false to dissalow new particles emission. 
 	 */
-	public void setEmissionCycleRunning(boolean emissionCycleRunning){
-		this.emissionCycleRunning = emissionCycleRunning;
+	public void setNewParticlesEmissionAllowed(boolean newParticlesEmissionAllowed){
+		this.newParticlesEmissionAllowed = newParticlesEmissionAllowed;
+	}
+	
+	/**
+	 * Checks if emitter is allowed to run next emission cycle after finishing current one. Irrelevant on non-continuous emitters. 
+	 * @return true if continuous emitter is supposed to run subsequent particles emission cycles, false otherwise
+	 */
+	public boolean isNewEmissionCyclesAllowed(){
+		return newEmissionCyclesAllowed;
+	}
+
+	/**
+	 * Sets whether emitter is allowed to run next emission cycle after finishing current one. Doesn't have any effect on non-continuous emitters. Will not affect already emitted particles which will live their life until their end.
+	 * @param newEmissionCyclesAllowed true to allow or false to disallow subsequent particles emission cycles on continuous emitters
+	 */
+	public void setNewEmissionCyclesAllowed(boolean newEmissionCyclesAllowed){
+		this.newEmissionCyclesAllowed = newEmissionCyclesAllowed;
 	}
 	
 	public boolean isComplete () {
