@@ -114,12 +114,14 @@ public class ParticleShader extends BaseShader {
 				shader.set(inputID,  TMP_VECTOR3.set(shader.camera.direction).crs(shader.camera.up).nor());
 			}
 		};
+
 		public final static Setter cameraUp = new Setter() {
 			@Override public boolean isGlobal (BaseShader shader, int inputID) { return true; }
 			@Override public void set (BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
 				shader.set(inputID,  TMP_VECTOR3.set(shader.camera.up).nor());
 			}
 		};
+		
 		public final static Setter cameraInvDirection = new Setter() {
 			@Override public boolean isGlobal (BaseShader shader, int inputID) { return true; }
 			@Override public void set (BaseShader shader, int inputID, Renderable renderable, Attributes combinedAttributes) {
