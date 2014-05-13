@@ -27,7 +27,6 @@ import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.model.MeshPart;
 import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
@@ -48,8 +47,6 @@ public class ModelBuilder {
 	/** The mesh builders created between begin and end */
 	private Array<MeshBuilder> builders = new Array<MeshBuilder>();
 
-	private 	Matrix4 tmpTransform = new Matrix4();
-	
 	private MeshBuilder getBuilder (final VertexAttributes attributes) {
 		for (final MeshBuilder mb : builders)
 			if (mb.getAttributes().equals(attributes) && mb.lastIndex() < Short.MAX_VALUE / 2) return mb;
@@ -436,16 +433,11 @@ public class ModelBuilder {
 
 		partBuilder = part("xyz", primitiveType, attributes, material);
 		partBuilder.setColor(Color.RED);
-		partBuilder.setVertexTransform(tmpTransform.setToRotation(Vector3.Z, -90));
-		partBuilder.arrow(axisLength, capLength, stemThickness, divisions);
-		
+		partBuilder.arrow(0, 0, 0,  axisLength, 0, 0, capLength, stemThickness, divisions);
 		partBuilder.setColor(Color.GREEN);
-		partBuilder.setVertexTransform(tmpTransform.idt());
-		partBuilder.arrow(axisLength, capLength, stemThickness, divisions);
-		
+		partBuilder.arrow(0, 0, 0,  0, axisLength, 0, capLength, stemThickness, divisions);
 		partBuilder.setColor(Color.BLUE);
-		partBuilder.setVertexTransform(tmpTransform.setToRotation(Vector3.X, 90));
-		partBuilder.arrow(axisLength, capLength, stemThickness, divisions);
+		partBuilder.arrow(0, 0, 0,  0, 0, axisLength, capLength, stemThickness, divisions);
 
 		return end();
 	}
@@ -461,22 +453,17 @@ public class ModelBuilder {
 	 * @param capLength is the height of the cap in percentage, must be in (0,1) 
 	 * @param stemThickness is the percentage of stem diameter compared to cap diameter, must be in (0,1]
 	 * @param divisions the amount of vertices used to generate the cap and stem ellipsoidal bases */
-	public Model createArrow( float length, float capLength, float stemThickness, int divisions, int primitiveType, Material material, long attributes){
+	public Model createArrow(float x1, float y1, float z1, float x2, float y2, float z2, float capLength, float stemThickness, int divisions, int primitiveType, Material material, long attributes){
 		begin();
 		part("arrow", primitiveType, attributes, material)
-			.arrow(length, capLength, stemThickness, divisions);
+			.arrow(x1, y1, z1, x2, y2, z2, capLength, stemThickness, divisions);
 		return end();
 	}
 	
-	/** Convenience method to create a model with an arrow.
-	 * The resources the Material might contain are not managed, 
-	 * use {@link Model#manageDisposable(Disposable)} to add those to the model.
-	 * @param length
-	 * @param material
-	 * @param attributes
-	 */
-	public Model createArrow( float length, Material material, long attributes){
-		return createArrow(length, 0.1f, 0.1f, 5, GL20.GL_TRIANGLES, material, attributes);
+	/** @param from where the arrow begins
+	 * @param to where the arrow ends */
+	public Model createArrow( Vector3 from, Vector3 to, Material material, long attributes){
+		return createArrow(from.x, from.y, from.z, to.x, to.y, to.z, 0.1f, 0.1f, 5, GL20.GL_TRIANGLES, material, attributes);
 	}
 	
 	/** Convenience method to create a model which represents a grid of lines on the XZ plane.
