@@ -11,6 +11,25 @@ import com.badlogic.gdx.utils.JsonValue;
 /** It's a generic use {@link Emitter} which fits most of the particles simulation scenarios. */
 /** @author Inferno */
 public class RegularEmitter extends Emitter implements Json.Serializable {
+	
+	/**
+	 * Possible emission modes. Emission mode does not affect already emitted particles.
+	 */
+	public enum EmissionMode {
+		/**
+		 * New particles can be emitted.
+		 */
+		ENABLED,
+		/**
+		 * Only valid for continuous emitters. It will only emit particles until the end of the effect duration. After that emission cycle will not be restarted.
+		 */
+		ENABLED_UNTIL_CYCLE_END,
+		/**
+		 * Prevents new particle emission.
+		 */
+		DISABLED
+	}
+	
 	public RangedNumericValue delayValue, durationValue;
 	public ScaledNumericValue 	lifeOffsetValue,
 								lifeValue, 
@@ -19,7 +38,8 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 	protected int lifeOffset, lifeOffsetDiff;
 	protected int life, lifeDiff;
 	protected float duration, delay, durationTimer, delayTimer;
-	private boolean continuous, newParticlesEmissionAllowed, newEmissionCyclesAllowed;
+	private boolean continuous;
+	private EmissionMode emissionMode;
 	
 	private FloatChannel lifeChannel;
 
@@ -34,8 +54,7 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		emissionValue.setActive(true);
 		lifeValue.setActive(true);
 		continuous = true;
-		newParticlesEmissionAllowed = true;
-		newEmissionCyclesAllowed = true;
+		emissionMode = EmissionMode.ENABLED;
 	}
 	
 	public RegularEmitter (RegularEmitter regularEmitter) {
@@ -103,20 +122,20 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		if (delayTimer < delay) {
 			delayTimer += deltaMillis;
 		} else {
-			boolean emitNextCycle = newParticlesEmissionAllowed;
+			boolean emit = emissionMode != EmissionMode.DISABLED;
 			//End check
 			if (durationTimer < duration) {
 				durationTimer += deltaMillis;
 				percent = durationTimer / (float)duration;
 			}
 			else {
-				if (continuous && emitNextCycle && newEmissionCyclesAllowed) 
+				if (continuous && emit && emissionMode == EmissionMode.ENABLED) 
 					controller.start();
 				else 
-					emitNextCycle = false;
+					emit = false;
 			}
 			
-			if(emitNextCycle) {
+			if(emit) {
 				//Emit particles
 				emissionDelta += deltaMillis;
 				float emissionTime = emission + emissionDiff * emissionValue.getScale(percent);
@@ -190,35 +209,19 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 	}
 	
 	/**
-	 * Checks if new particles emission is allowed. 
-	 * @return true if emitter is allowed to emit more particles
+	 * Gets current emission mode.
+	 * @return Current emission mode.
 	 */
-	public boolean isNewParticlesEmissionAllowed(){
-		return newParticlesEmissionAllowed;
-	}
-
-	/**
-	 * Sets whether emitter is allowed to emit new particles. Will not affect already emitted particles which will live their life until their end.
-	 * @param newParticlesEmissionAllowed false to dissalow new particles emission. 
-	 */
-	public void setNewParticlesEmissionAllowed(boolean newParticlesEmissionAllowed){
-		this.newParticlesEmissionAllowed = newParticlesEmissionAllowed;
+	public EmissionMode getEmissionMode(){
+		return this.emissionMode;
 	}
 	
 	/**
-	 * Checks if emitter is allowed to run next emission cycle after finishing current one. Irrelevant on non-continuous emitters. 
-	 * @return true if continuous emitter is supposed to run subsequent particles emission cycles, false otherwise
+	 * Sets emission mode. Emission mode does not affect already emitted particles.
+	 * @param emissionMode Emission mode to set.
 	 */
-	public boolean isNewEmissionCyclesAllowed(){
-		return newEmissionCyclesAllowed;
-	}
-
-	/**
-	 * Sets whether emitter is allowed to run next emission cycle after finishing current one. Doesn't have any effect on non-continuous emitters. Will not affect already emitted particles which will live their life until their end.
-	 * @param newEmissionCyclesAllowed true to allow or false to disallow subsequent particles emission cycles on continuous emitters
-	 */
-	public void setNewEmissionCyclesAllowed(boolean newEmissionCyclesAllowed){
-		this.newEmissionCyclesAllowed = newEmissionCyclesAllowed;
+	public void setEmissionMode(EmissionMode emissionMode){
+		this.emissionMode = emissionMode;
 	}
 	
 	public boolean isComplete () {
