@@ -19,15 +19,15 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		/**
 		 * New particles can be emitted.
 		 */
-		ENABLED,
+		Enabled,
 		/**
 		 * Only valid for continuous emitters. It will only emit particles until the end of the effect duration. After that emission cycle will not be restarted.
 		 */
-		ENABLED_UNTIL_CYCLE_END,
+		EnabledUntilCycleEnd,
 		/**
 		 * Prevents new particle emission.
 		 */
-		DISABLED
+		Disabled
 	}
 	
 	public RangedNumericValue delayValue, durationValue;
@@ -54,7 +54,7 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		emissionValue.setActive(true);
 		lifeValue.setActive(true);
 		continuous = true;
-		emissionMode = EmissionMode.ENABLED;
+		emissionMode = EmissionMode.Enabled;
 	}
 	
 	public RegularEmitter (RegularEmitter regularEmitter) {
@@ -122,14 +122,14 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		if (delayTimer < delay) {
 			delayTimer += deltaMillis;
 		} else {
-			boolean emit = emissionMode != EmissionMode.DISABLED;
+			boolean emit = emissionMode != EmissionMode.Disabled;
 			//End check
 			if (durationTimer < duration) {
 				durationTimer += deltaMillis;
 				percent = durationTimer / (float)duration;
 			}
 			else {
-				if (continuous && emit && emissionMode == EmissionMode.ENABLED) 
+				if (continuous && emit && emissionMode == EmissionMode.Enabled) 
 					controller.start();
 				else 
 					emit = false;
