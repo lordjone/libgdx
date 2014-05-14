@@ -1115,4 +1115,3 @@ public class MeshBuilder implements MeshPartBuilder {
 		vertexTransformationEnabled = enabled;
 	}
 }
->>>>>>> refs/remotes/libgdx/master
