@@ -213,7 +213,7 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 	 * @return Current emission mode.
 	 */
 	public EmissionMode getEmissionMode(){
-		return this.emissionMode;
+		return emissionMode;
 	}
 	
 	/**
