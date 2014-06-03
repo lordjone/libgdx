@@ -59,7 +59,6 @@ import com.badlogic.gdx.graphics.g3d.particles.values.PointSpawnShapeValue;
 import com.badlogic.gdx.graphics.g3d.particles.values.PrimitiveSpawnShapeValue.SpawnSide;
 import com.badlogic.gdx.tools.flame.FlameMain.ControllerData;
 import com.badlogic.gdx.tools.flame.FlameMain.ControllerType;
-import com.badlogic.gdx.utils.Array;
 
 /** @author Inferno */
 class EffectPanel extends JPanel {

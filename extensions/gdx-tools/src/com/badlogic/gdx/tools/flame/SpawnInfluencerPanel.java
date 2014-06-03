@@ -35,11 +35,11 @@ import com.badlogic.gdx.graphics.g3d.particles.values.EllipseSpawnShapeValue;
 import com.badlogic.gdx.graphics.g3d.particles.values.LineSpawnShapeValue;
 import com.badlogic.gdx.graphics.g3d.particles.values.PointSpawnShapeValue;
 import com.badlogic.gdx.graphics.g3d.particles.values.PrimitiveSpawnShapeValue;
+import com.badlogic.gdx.graphics.g3d.particles.values.PrimitiveSpawnShapeValue.SpawnSide;
 import com.badlogic.gdx.graphics.g3d.particles.values.RectangleSpawnShapeValue;
 import com.badlogic.gdx.graphics.g3d.particles.values.SpawnShapeValue;
 import com.badlogic.gdx.graphics.g3d.particles.values.UnweightedMeshSpawnShapeValue;
 import com.badlogic.gdx.graphics.g3d.particles.values.WeightMeshSpawnShapeValue;
-import com.badlogic.gdx.graphics.g3d.particles.values.PrimitiveSpawnShapeValue.SpawnSide;
 import com.badlogic.gdx.utils.Array;
 
 /** @author Inferno */
