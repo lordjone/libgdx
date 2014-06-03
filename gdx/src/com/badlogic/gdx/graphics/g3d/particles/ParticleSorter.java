@@ -6,12 +6,12 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
-/** This class is used by {@link ParticleBatch} to sort the particles before render them.*/
-/** @author Inferno */
-
+/** This class is used by particle batches to sort the particles before rendering.
+ * @author Inferno */
 public abstract class ParticleSorter {
 	static final Vector3 TMP_V1 = new Vector3();
 	
+	/** Using this class will not apply sorting */
 	public static class None extends ParticleSorter{
 		int currentCapacity = 0;
 		int[] indices;
@@ -31,87 +31,8 @@ public abstract class ParticleSorter {
 			return indices;
 		}
 	}
-	
-	/*
-	public static class ParallelDistanceParticleSorter extends ParticleSorter{
-		float cx, cy, cz;
-		ParticleControllerRenderData data;
-		int currentIndex;
-		private class DistanceBlock extends Parallel.ForBlock{
-			@Override
-			public Void call () throws Exception {
-				for(int k=startIndex*data.positionChannel.strideSize, i = currentIndex +startIndex, c = i + endIndex; i < c; ++i, k+=data.positionChannel.strideSize){
-					distances[i] = cx*data.positionChannel.data[k+ParticleChannels.XOffset] + cy*data.positionChannel.data[k+ParticleChannels.YOffset] + cz*data.positionChannel.data[k+ParticleChannels.ZOffset];
-					particleIndices[i] = i;
-				}
-				return null;
-			}
-		}
-		
-		private float[] distances;
-		private int[] particleIndices, particleOffsets;
-		private int currentSize = 0;
-		private Pool<ParallelQuickSortTask> quickSortTaskPool;
-		private Array<DistanceBlock> distanceBlocks;
-		private Vector<Future> futures;
-		
-		public ParallelDistanceParticleSorter(){
-			quickSortTaskPool = new Pool<ParallelQuickSortTask>(){
-				@Override
-				protected ParallelQuickSortTask newObject () {
-					return new ParallelQuickSortTask(quickSortTaskPool);
-				}
-			};
-			futures = new Vector();
-			distanceBlocks = new Array<DistanceBlock>();
-			for(int i=0; i < Parallel.NUM_CORES; ++i){
-				distanceBlocks.add(new DistanceBlock());
-			}
-		}
-		
-		@Override
-		public void ensureCapacity (int capacity) {
-			if(currentSize < capacity){
-				distances = new float[capacity];
-				particleIndices = new int[capacity];
-				particleOffsets = new int[capacity];
-				currentSize = capacity;
-			}
-		}
 
-		@Override
-		public  <T extends ParticleControllerRenderData> int[] sort(Array<T> renderData){
-			float[] val = camera.view.val;
-			cx = val[Matrix4.M20]; 
-			cy = val[Matrix4.M21];
-			cz = val[Matrix4.M22];
-			currentIndex = 0;
-			for(ParticleControllerRenderData data : renderData){
-				this.data = data;
-				Parallel.blockingFor(0, data.controller.particles.size, distanceBlocks);
-				currentIndex += data.controller.particles.size;
-			}
-			
-			ParallelQuickSortTask rootTask = quickSortTaskPool.obtain().set(futures, distances, particleIndices, 0, currentIndex -1); 
-			futures.add(Parallel.executorService.submit(rootTask));
-			try{
-				while(!futures.isEmpty()){
-					futures.remove(0).get();
-				}
-			}catch(InterruptedException ie){
-				ie.printStackTrace();
-			}catch(ExecutionException ie){
-				ie.printStackTrace();
-			}
-			
-			for(int i=0; i < currentIndex; ++i){
-				particleOffsets[particleIndices[i]] = i;
-			}
-			return particleOffsets;
-		}
-	}
-	*/
-	
+	/** This class will sort all the particles using the distance from camera. */
 	public static class Distance extends ParticleSorter{
 		private float[] distances;
 		private int[] particleIndices, particleOffsets;
@@ -206,12 +127,15 @@ public abstract class ParticleSorter {
 	}
 
 	protected Camera camera;
-
+	
+	/**@return an array of offsets where each particle should be put in the resulting mesh 
+	 * (also if more than one mesh will be generated, this is an absolute offset considering a BIG output array). */
 	public abstract <T extends ParticleControllerRenderData> int[] sort(Array<T> renderData);
 	
 	public void setCamera(Camera camera){
 		this.camera = camera;
 	}
-	
+	/** This method is called when the batch has increased the underlying particle buffer.
+	 * In this way the sorter can increase the data structures used to sort the particles (i.e increase backing array size) */
 	public void ensureCapacity (int capacity) {}	
 }

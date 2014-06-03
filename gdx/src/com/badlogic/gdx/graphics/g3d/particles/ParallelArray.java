@@ -6,9 +6,15 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.badlogic.gdx.utils.reflect.ArrayReflection;
 
-
+/** This class represents an group of elements like an array, but the properties of the elements are stored as separate arrays.
+ *  These arrays are called {@link Channel} and are represented by {@link ChannelDescriptor}.
+ *  It's not necessary to store primitive types in the channels but doing so will "exploit" data locality 
+ *  in the JVM, which is ensured for primitive types.
+ *  Use {@link FloatChannel}, {@link IntChannel}, {@link ObjectChannel} to store the data. 
+ *  @author inferno */
 public class ParallelArray {
 	
+	/** This class describes the content of a {@link Channel}*/
 	public static class ChannelDescriptor{
 		public int id;
 		public Class<?> type;
@@ -20,6 +26,7 @@ public class ParallelArray {
 		}
 	}
 	
+	/** This class represents a container of values for all the elements for a given property*/
 	public abstract class Channel{
 		public int id;
 		public Object data;
@@ -34,6 +41,7 @@ public class ParallelArray {
 		protected abstract void setCapacity (int requiredCapacity);
 	}
 	
+	/** This interface is used to provide custom initialization of the {@link Channel} data */
 	public static interface ChannelInitializer<T extends Channel>{
 		public void init(T channel);
 	}
@@ -135,6 +143,7 @@ public class ParallelArray {
 		}
 	}
 	
+	/**the channels added to the array*/
 	Array<Channel> arrays;
 	/** the maximum amount of elements that this array can hold */
 	public int capacity;
@@ -180,6 +189,7 @@ public class ParallelArray {
 		}
 	}
 	
+	/**Removes the channel with the given id*/
 	public <T> void removeArray(int id){
 		arrays.removeIndex(findIndex(id));
 	}
@@ -193,6 +203,8 @@ public class ParallelArray {
 		return -1;
 	}
 	
+	/**Adds an element considering the values in the same order as the current channels in the array.
+	 * The n_th value  must have the same type and stride of the given channel at position n*/
 	public void addElement(Object...values){
 		/*FIXME make it grow...*/
 		if(size == capacity) 
@@ -206,6 +218,7 @@ public class ParallelArray {
 		++size;
 	}
 	
+	/**Removes the element at the given index and swaps it with the last available element */
 	public void removeElement(int index){
 		int last = size -1;
 		//Swap
@@ -215,6 +228,7 @@ public class ParallelArray {
 		size = last;
 	}
 	
+	/**@return the channel with the same id as the one in the descriptor */
 	@SuppressWarnings("unchecked")
 	public <T extends Channel> T getChannel (ChannelDescriptor descriptor) {
 		for(Channel array : arrays){

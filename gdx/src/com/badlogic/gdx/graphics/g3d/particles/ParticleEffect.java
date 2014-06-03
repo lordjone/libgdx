@@ -26,8 +26,8 @@ import com.badlogic.gdx.utils.Disposable;
 
 /** It's a set of particles controllers.
  * It can be updated, rendered, transformed which means the changes will be applied
- * on all the particles controllers.*/
-/** @author Inferno */
+ * on all the particles controllers.
+ * @author inferno */
 public class ParticleEffect implements Disposable, ResourceData.Configurable{
 	private Array<ParticleController> controllers;
 	private BoundingBox bounds;
@@ -112,6 +112,7 @@ public class ParticleEffect implements Disposable, ResourceData.Configurable{
 			controllers.get(i).scale(scale.x, scale.y, scale.z);
 	}
 
+	/**@return all particle controllers. */
 	public Array<ParticleController> getControllers () {
 		return controllers;
 	}
@@ -131,6 +132,7 @@ public class ParticleEffect implements Disposable, ResourceData.Configurable{
 		}
 	}
 
+	/** @return the merged bounding box of all controllers. */
 	public BoundingBox getBoundingBox () {
 		if (bounds == null) bounds = new BoundingBox();
 
@@ -151,16 +153,19 @@ public class ParticleEffect implements Disposable, ResourceData.Configurable{
 		}
 	}
 
+	/** @return a copy of this effect, should be used after the particle effect has been loaded. */
 	public ParticleEffect copy () {
 		return new ParticleEffect(this);
 	}
 	
+	/** Saves all the assets required by all the controllers inside this effect. */
 	public void save (AssetManager assetManager, ResourceData data){
 		for(ParticleController controller : controllers){
 			controller.save(assetManager, data);
 		}
 	}
 	
+	/** Loads all the assets required by all the controllers inside this effect. */
 	public void load (AssetManager assetManager, ResourceData data){
 		int i=0;
 		for(ParticleController controller : controllers){

@@ -1,14 +1,15 @@
 package com.badlogic.gdx.graphics.g3d.particles.influencers;
 
-import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleController;
 import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.ObjectChannel;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleController;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-/** It's an {@link Influencer} which updates the simulation of particles representing a {@link ParticleController}.
- * Must be the last influencer to be updated, so it has to be placed at the end of the influencers list when creating a {@link ParticleControlller}.*/
-/** @author Inferno */
+/** It's an {@link Influencer} which updates the simulation of particles containing a {@link ParticleController}.
+ * Must be the last influencer to be updated, so it has to be placed at the end 
+ * of the influencers list when creating a {@link ParticleController}.
+ * @author Inferno */
 public class ParticleControllerFinalizerInfluencer extends Influencer {
 	FloatChannel positionChannel, scaleChannel, rotationChannel;
 	ObjectChannel<ParticleController> controllerChannel;

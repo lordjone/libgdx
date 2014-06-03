@@ -1,8 +1,8 @@
 package com.badlogic.gdx.graphics.g3d.particles.influencers;
 
+import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleControllerComponent;
-import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.values.ScaledNumericValue;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
@@ -12,7 +12,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 /** It's the base class for any kind of influencer which operates on angular velocity and acceleration of the particles.
- * All the classes that will inherit this base class can and should be used only as sub-influencer inside an instance of {@link DynamicsInfluencer} .
+ * All the classes that will inherit this base class can and should be used 
+ * only as sub-influencer of an instance of {@link DynamicsInfluencer} .
  *  @author Inferno */
 public abstract class DynamicsModifier extends Influencer{
 	protected static final Vector3 	TMP_V1 = new Vector3(), 
@@ -382,180 +383,6 @@ public abstract class DynamicsModifier extends Influencer{
 			return new PolarAcceleration(this);
 		}
 	}
-	
-	/*
-	public static class ParallelPolar extends Angular {
-		private class UpdateBlock extends Parallel.ForBlock{
-			private Vector3 tmp = new Vector3();
-			@Override
-			public Void call () throws Exception {
-				for(int 	i=startIndex*directionalVelocityChannel.strideSize, l = ParticleChannels.LifePercentOffset, s =0, a = 0,
-					c = i +sliceSize*directionalVelocityChannel.strideSize; 
-					i < c; 
-					s += strengthChannel.strideSize, i +=directionalVelocityChannel.strideSize, 
-						a += angularChannel.strideSize, l += lifeChannel.strideSize){
-
-					float 	lifePercent = lifeChannel.data[l],
-						strength = 	strengthChannel.data[s + ParticleChannels.VelocityStrengthStartOffset] + 
-						strengthChannel.data[s + ParticleChannels.VelocityStrengthDiffOffset]* strengthValue.getScale(lifePercent),
-						phi = 	angularChannel.data[a + ParticleChannels.VelocityPhiStartOffset] + 
-						angularChannel.data[a + ParticleChannels.VelocityPhiDiffOffset]* phiValue.getScale(lifePercent),
-						theta = 	angularChannel.data[a + ParticleChannels.VelocityThetaStartOffset] + 
-						angularChannel.data[a + ParticleChannels.VelocityThetaDiffOffset]* thetaValue.getScale(lifePercent);
-
-					float cosTheta = MathUtils.cosDeg(theta), sinTheta = MathUtils.sinDeg(theta),
-						cosPhi = MathUtils.cosDeg(phi), sinPhi = MathUtils.sinDeg(phi);
-					tmp.set(cosTheta *sinPhi, cosPhi, sinTheta*sinPhi).nor().scl(strength);	
-					directionalVelocityChannel.data[i +ParticleChannels.XOffset] += tmp.x;
-					directionalVelocityChannel.data[i +ParticleChannels.YOffset] += tmp.y;
-					directionalVelocityChannel.data[i +ParticleChannels.ZOffset] += tmp.z;
-				}
-				return null;
-			}
-		}
-
-		FloatChannel directionalVelocityChannel;
-		Array<UpdateBlock> updateBlocks;
-		
-		public ParallelPolar(){}
-		
-		public ParallelPolar (ParallelPolar rotation) {
-			super(rotation);
-		}
-
-		@Override
-		public void init () {
-			super.init();
-			if(updateBlocks == null){
-				updateBlocks = new Array<VelocityModifier.ParallelPolar.UpdateBlock>();
-				for(int i=0; i < Parallel.NUM_CORES; ++i){
-					updateBlocks.add(new UpdateBlock());
-				}
-			}
-		}
-		
-		@Override
-		public void allocateChannels() {
-			super.allocateChannels();
-			directionalVelocityChannel = controller.particles.addChannel(ParticleChannels.Accelleration);
-		}
-		
-		@Override
-		public void update () {
-			Parallel.blockingFor(0, controller.particles.size, updateBlocks);
-		}
-
-		@Override
-		public ParallelPolar copy () {
-			return new ParallelPolar(this);
-		}
-	}
-	
-	public static class Directional extends Strength {
-		FloatChannel accelerationChannel, directionChannel;
-		public ScaledNumericValue xValue, yValue, zValue;
-		
-		public Directional(){
-			xValue = new ScaledNumericValue();
-			yValue = new ScaledNumericValue();
-			zValue = new ScaledNumericValue();
-		}
-		
-		public Directional (Directional value) {
-			super(value);
-			xValue = new ScaledNumericValue();
-			yValue = new ScaledNumericValue();
-			zValue = new ScaledNumericValue();
-			xValue.load(value.xValue);
-			yValue.load(value.yValue);
-			zValue.load(value.zValue);
-		}
-		
-		@Override
-		public void allocateChannels() {
-			super.allocateChannels();
-			ParticleChannels.Interpolation6.id = controller.particleChannels.newId();
-			directionChannel = controller.particles.addChannel(ParticleChannels.Interpolation6);			
-			accelerationChannel = controller.particles.addChannel(ParticleChannels.Accelleration);
-		}
-		
-		@Override
-		public void activateParticles (int startIndex, int count) {
-			super.activateParticles(startIndex, count);
-			float start, diff;
-			for(int 	i=startIndex*directionChannel.strideSize, c = i +count*directionChannel.strideSize; 
-				i < c; 
-				i +=directionChannel.strideSize){
-				//X
-				start = xValue.newLowValue();
-				diff = xValue.newHighValue();
-				if(!xValue.isRelative())
-					diff -= start;
-				directionChannel.data[i + 0] = start;
-				directionChannel.data[i + 1] = diff;
-				//Y
-				start = yValue.newLowValue();
-				diff = yValue.newHighValue();
-				if(!yValue.isRelative())
-					diff -= start;
-				directionChannel.data[i + 2] = start;
-				directionChannel.data[i + 3] = diff;
-				//Z
-				start = zValue.newLowValue();
-				diff = zValue.newHighValue();
-				if(!zValue.isRelative())
-					diff -= start;
-				directionChannel.data[i + 4] = start;
-				directionChannel.data[i + 5] = diff;
-			}
-		}
-
-		@Override
-		public void update () {
-			for(int 	i=0, l = ParticleChannels.LifePercentOffset, s =0, a = 0,
-				c = i +controller.particles.size*accelerationChannel.strideSize; 
-				i < c; 
-				s += strengthChannel.strideSize, i +=accelerationChannel.strideSize, 
-				a += directionChannel.strideSize, l += lifeChannel.strideSize){
-				
-				float 	lifePercent = lifeChannel.data[l],
-							strength = 	strengthChannel.data[s + ParticleChannels.VelocityStrengthStartOffset] + 
-													strengthChannel.data[s + ParticleChannels.VelocityStrengthDiffOffset]* strengthValue.getScale(lifePercent),
-							x = 	directionChannel.data[a + 0] + 
-										directionChannel.data[a + 1] * xValue.getScale(lifePercent),
-							y = 	directionChannel.data[a + 2] + 
-										directionChannel.data[a + 3] * yValue.getScale(lifePercent),
-							z = 	directionChannel.data[a + 4] + 
-										directionChannel.data[a + 5] * zValue.getScale(lifePercent);
-				TMP_V3.set(x,y,z).nor().scl(strength);	
-				accelerationChannel.data[i +ParticleChannels.XOffset] += TMP_V3.x;
-				accelerationChannel.data[i +ParticleChannels.YOffset] += TMP_V3.y;
-				accelerationChannel.data[i +ParticleChannels.ZOffset] += TMP_V3.z;
-			}
-		}
-
-		@Override
-		public Directional copy () {
-			return new Directional(this);
-		}
-		
-		@Override
-		public void write (Json json) {
-			super.write(json);
-			json.writeValue("xValue", xValue);
-			json.writeValue("yValue", yValue);
-			json.writeValue("zValue", zValue);
-		}
-
-		@Override
-		public void read (Json json, JsonValue jsonData) {
-			super.read(json, jsonData);
-			xValue = json.readValue("xValue", ScaledNumericValue.class, jsonData);
-			yValue = json.readValue("yValue", ScaledNumericValue.class, jsonData);
-			zValue = json.readValue("zValue", ScaledNumericValue.class, jsonData);
-		}
-	}
-	*/
 	
 	public static class TangentialAcceleration extends Angular {
 		FloatChannel directionalVelocityChannel, positionChannel;

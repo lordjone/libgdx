@@ -7,7 +7,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 
 /**Singleton class which manages the particle effects.
- * It's a utility class to ease particle batches management and particle effects update. */
+ * It's a utility class to ease particle batches management and particle effects update. 
+ * @author inferno*/
 public final class ParticleSystem implements RenderableProvider{
 	private static ParticleSystem instance;
 	
@@ -42,6 +43,7 @@ public final class ParticleSystem implements RenderableProvider{
 		effects.clear();
 	}
 	
+	/** Updates the simulation of all effects */
 	public void update(){
 		for(ParticleEffect effect : effects){
 			effect.update();
@@ -55,17 +57,21 @@ public final class ParticleSystem implements RenderableProvider{
 		}
 	}
 
+	/** Must be called one time per frame before any particle effect drawing operation will occur. */
 	public void begin(){
 		for(ParticleBatch<?> batch : batches)
 			batch.begin();
 	}
 
+	/** Draws all the particle effects. 
+	 * Call {@link #begin()} before this method and {@link #end()} after.*/
 	public void draw(){
 		for(ParticleEffect effect : effects){
 			effect.draw();
 		}
 	}
-		
+	
+	/** Must be called one time per frame at the end of all drawing operations. */
 	public void end(){
 		for(ParticleBatch<?> batch : batches)
 			batch.end();

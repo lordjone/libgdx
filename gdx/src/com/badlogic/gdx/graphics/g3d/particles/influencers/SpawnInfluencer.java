@@ -1,16 +1,16 @@
 package com.badlogic.gdx.graphics.g3d.particles.influencers;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
 import com.badlogic.gdx.graphics.g3d.particles.ResourceData;
-import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.values.PointSpawnShapeValue;
 import com.badlogic.gdx.graphics.g3d.particles.values.SpawnShapeValue;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-/** It's an {@link Influencer} which controls where the particles will be spawned in the space when activated.*/
-/** @author Inferno */
+/** It's an {@link Influencer} which controls where the particles will be spawned.
+ * @author Inferno */
 public class SpawnInfluencer extends Influencer {
 
 	public SpawnShapeValue spawnShapeValue;

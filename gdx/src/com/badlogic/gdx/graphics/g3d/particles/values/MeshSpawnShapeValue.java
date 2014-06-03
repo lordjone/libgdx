@@ -11,8 +11,8 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 
-/** The base class of all the {@link ParticleValue} values which spawn a particle on a mesh shape. */
-/** @author Inferno */
+/** The base class of all the {@link ParticleValue} values which spawn a particle on a mesh shape.
+* @author Inferno */
 public abstract class MeshSpawnShapeValue extends SpawnShapeValue {
 	protected static class Triangle{
 		float x1, y1, z1,

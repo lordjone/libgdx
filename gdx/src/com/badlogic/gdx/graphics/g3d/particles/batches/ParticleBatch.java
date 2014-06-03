@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.g3d.RenderableProvider;
 import com.badlogic.gdx.graphics.g3d.particles.ResourceData;
 import com.badlogic.gdx.graphics.g3d.particles.renderers.ParticleControllerRenderData;
 
-/** Common interface to all the batches that render particles. */
-/** @author Inferno */
+/** Common interface to all the batches that render particles. 
+ * @author Inferno */
 public interface ParticleBatch<T extends ParticleControllerRenderData> extends RenderableProvider, ResourceData.Configurable {
 	
 	/** Must be called once before any drawing operation*/

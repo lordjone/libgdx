@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 
-import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetLoaderParameters;
@@ -13,8 +12,6 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.AsynchronousAssetLoader;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.particles.ResourceData.AssetData;
 import com.badlogic.gdx.graphics.g3d.particles.batches.ParticleBatch;
 import com.badlogic.gdx.utils.Array;
@@ -26,8 +23,8 @@ import com.badlogic.gdx.utils.ObjectMap;
  * It's important to note that the two classes {@link ParticleEffectLoadParameter} and {@link ParticleEffectSaveParameter} should
  * be passed in whenever possible, because when present the batches settings will be loaded automatically.
  * When the load and save parameters are absent, once the effect will be created, one will have to set the required batches
- * manually otherwise the {@link ParticleController} instances contained inside the effect will not be able to render themselves. */
-/** @author Inferno */
+ * manually otherwise the {@link ParticleController} instances contained inside the effect will not be able to render themselves. 
+ * @author inferno */
 public class ParticleEffectLoader extends AsynchronousAssetLoader<ParticleEffect, ParticleEffectLoader.ParticleEffectLoadParameter> {
 	protected Array<ObjectMap.Entry<String, ResourceData<ParticleEffect>>> items = new Array<ObjectMap.Entry<String, ResourceData<ParticleEffect>>>(); 
 	
@@ -70,6 +67,7 @@ public class ParticleEffectLoader extends AsynchronousAssetLoader<ParticleEffect
 		
 	}
 	
+	/** Saves the effect to the given file contained in the passed in parameter. */
 	public void save(ParticleEffect effect, ParticleEffectSaveParameter parameter) throws IOException{
 		ResourceData<ParticleEffect> data =  new ResourceData<ParticleEffect>(effect);
 		

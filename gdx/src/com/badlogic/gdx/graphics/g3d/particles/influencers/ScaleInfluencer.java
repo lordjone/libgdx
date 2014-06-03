@@ -3,8 +3,8 @@ package com.badlogic.gdx.graphics.g3d.particles.influencers;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleControllerComponent;
 
-/** It's an {@link Influencer} which controls the scale of the particles.*/
-/** @author Inferno */
+/** It's an {@link Influencer} which controls the scale of the particles.
+ * @author Inferno */
 public class ScaleInfluencer extends SimpleInfluencer{
 	
 	public ScaleInfluencer(){

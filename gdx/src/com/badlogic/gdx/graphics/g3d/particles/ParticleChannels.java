@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.ChannelDescriptor;
 import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.ChannelInitializer;
 import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 
+/** This contains all the definitions of particle related channels and channel initializers.
+ * It is also used by the {@link ParticleController} to handle temporary channels allocated by influencers.
+ * @author inferno */
 public class ParticleChannels {
 	private static int currentGlobalId;
 	public static int newGlobalId(){
@@ -96,6 +99,7 @@ public class ParticleChannels {
 	}
 
 	//Channels
+	/** Channels of common use like position, life, color, etc...*/
 	public static final ChannelDescriptor Life = new ChannelDescriptor(newGlobalId(), float.class, 3);
 	public static final ChannelDescriptor Position = new ChannelDescriptor(newGlobalId(), float.class, 3); //gl units
 	public static final ChannelDescriptor PreviousPosition = new ChannelDescriptor(newGlobalId(), float.class, 3);
@@ -114,6 +118,7 @@ public class ParticleChannels {
 	public static final ChannelDescriptor Interpolation6 = new ChannelDescriptor(-1, float.class, 6);
 	
 	//Offsets
+	/** Offsets to acess a particular value inside a stride of a given channel */
 	public static final int CurrentLifeOffset = 0, TotalLifeOffset = 1, LifePercentOffset =2;
 	public static final int RedOffset = 0, GreenOffset =1, BlueOffset = 2, AlphaOffset =3;
 	public static final int InterpolationStartOffset = 0, InterpolationDiffOffset =1;
@@ -125,8 +130,6 @@ public class ParticleChannels {
 												HalfWidthOffset = 4, HalfHeightOffset= 5;
 	public static final int CosineOffset = 0, SineOffset= 1;
 
-	
-	
 	private int currentId; 
 
 	public ParticleChannels(){

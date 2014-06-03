@@ -6,10 +6,9 @@ import com.badlogic.gdx.math.CumulativeDistribution;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
-
 /** Encapsulate the formulas to spawn a particle on a mesh shape dealing
- * with not uniform area triangles. */
-/** @author Inferno */
+ * with not uniform area triangles.
+ * @author Inferno */
 public final class WeightMeshSpawnShapeValue extends MeshSpawnShapeValue {
 	
 	private CumulativeDistribution<Triangle> distribution;

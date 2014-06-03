@@ -5,9 +5,8 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-
-/** Encapsulate the formulas to spawn a particle on a ellipse shape. */
-/** @author Inferno */
+/** Encapsulate the formulas to spawn a particle on a ellipse shape.
+ * @author Inferno */
 public final class EllipseSpawnShapeValue extends PrimitiveSpawnShapeValue {
 	SpawnSide side = SpawnSide.both;
 	
@@ -97,6 +96,4 @@ public final class EllipseSpawnShapeValue extends PrimitiveSpawnShapeValue {
 		super.read(json, jsonData);
 		side = json.readValue("side", SpawnSide.class, jsonData);
 	}
-	
-	
 }

@@ -5,7 +5,8 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleSorter;
 import com.badlogic.gdx.graphics.g3d.particles.renderers.ParticleControllerRenderData;
 import com.badlogic.gdx.utils.Array;
 
-/** @author Inferno */
+/** Base class of all the batches requiring to buffer {@link ParticleControllerRenderData} 
+* @author Inferno */
 public abstract class BufferedParticleBatch<T extends ParticleControllerRenderData> implements ParticleBatch<T> {
 	protected Array<T> renderData;
 	protected int bufferedParticlesCount, currentCapacity = 0;
@@ -30,6 +31,7 @@ public abstract class BufferedParticleBatch<T extends ParticleControllerRenderDa
 		}
 	}
 	
+	/** */
 	public void end(){
 		if(bufferedParticlesCount > 0){
 			ensureCapacity(bufferedParticlesCount);

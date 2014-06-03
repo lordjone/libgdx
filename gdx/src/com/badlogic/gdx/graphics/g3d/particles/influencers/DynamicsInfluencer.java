@@ -2,16 +2,16 @@ package com.badlogic.gdx.graphics.g3d.particles.influencers;
 
 import java.util.Arrays;
 
+import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleController;
-import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-/** It's an {@link Influencer} which controls the particles dynamics (movement, rotations).*/
-/** @author Inferno */
+/** It's an {@link Influencer} which controls the particles dynamics (movement, rotations).
+ *  @author Inferno */
 public class DynamicsInfluencer extends Influencer {
 	public Array<DynamicsModifier> velocities;
 	private FloatChannel 	accellerationChannel, 
@@ -40,7 +40,7 @@ public class DynamicsInfluencer extends Influencer {
 			velocities.items[k].allocateChannels();
 		}
 		
-		//Hack, shouldn't be done but after all the modifiers have allocated their channels
+		//Hack, shouldn't be done but after all the modifiers allocated their channels
 		//it's possible to check if we need to allocate previous position channel
 		accellerationChannel = controller.particles.getChannel(ParticleChannels.Acceleration);
 		hasAcceleration = accellerationChannel != null;
@@ -82,7 +82,7 @@ public class DynamicsInfluencer extends Influencer {
 	public void activateParticles (int startIndex, int count) {
 		if(hasAcceleration){
 			//Previous position is the current position
-			//Attention, this requires that some other influencer setting the position channel must exectue before this influencer.
+			//Attention, this requires that some other influencer setting the position channel must execute before this influencer.
 			for(int i=startIndex*positionChannel.strideSize, c = i +count*positionChannel.strideSize; i< c;  i+= positionChannel.strideSize){
 				previousPositionChannel.data[i+ParticleChannels.XOffset] = positionChannel.data[i+ParticleChannels.XOffset];
 				previousPositionChannel.data[i+ParticleChannels.YOffset] = positionChannel.data[i+ParticleChannels.YOffset];
@@ -119,7 +119,6 @@ public class DynamicsInfluencer extends Influencer {
 	}
 	
 	public void update(){
-		
 		//Clean previouse frame velocities
 		if(hasAcceleration)
 			Arrays.fill(accellerationChannel.data, 0, controller.particles.size*accellerationChannel.strideSize, 0);
@@ -133,7 +132,6 @@ public class DynamicsInfluencer extends Influencer {
 		
 		//Apply the forces
 		if(hasAcceleration){
-			
 			/*
 			 //Euler Integration
 			for(int 	i=0, offset = 0; i < controller.particles.size; ++i, offset +=positionChannel.strideSize){
@@ -146,7 +144,6 @@ public class DynamicsInfluencer extends Influencer {
 				positionChannel.data[offset + ParticleChannels.ZOffset] += previousPositionChannel.data[offset + ParticleChannels.ZOffset]*controller.deltaTime;
 			}
 			*/
-			
 			//Verlet integration
 			for(int 	i=0, offset = 0; i < controller.particles.size; ++i, offset +=positionChannel.strideSize){
 				float 	x = positionChannel.data[offset + ParticleChannels.XOffset],
@@ -162,29 +159,9 @@ public class DynamicsInfluencer extends Influencer {
 				previousPositionChannel.data[offset + ParticleChannels.YOffset] = y;
 				previousPositionChannel.data[offset + ParticleChannels.ZOffset] = z;
 			}
-			
-			/*
-			for(int 	i=0, offset = 0; i < controller.particles.size; ++i, offset +=positionChannel.strideSize){
-				previousPositionChannel.data[offset + ParticleChannels.XOffset] = 
-									2*positionChannel.data[offset + ParticleChannels.XOffset] - previousPositionChannel.data[offset + ParticleChannels.XOffset] + 
-									accellerationChannel.data[offset + ParticleChannels.XOffset]*controller.deltaTimeSqr;
-				previousPositionChannel.data[offset + ParticleChannels.YOffset] =
-									2*positionChannel.data[offset + ParticleChannels.YOffset] - previousPositionChannel.data[offset + ParticleChannels.YOffset] + 
-									accellerationChannel.data[offset + ParticleChannels.YOffset]*controller.deltaTimeSqr;
-				previousPositionChannel.data[offset + ParticleChannels.ZOffset] =
-									2*positionChannel.data[offset + ParticleChannels.ZOffset] - previousPositionChannel.data[offset + ParticleChannels.ZOffset] + 
-									accellerationChannel.data[offset + ParticleChannels.ZOffset]*controller.deltaTimeSqr;
-			}
-			
-			//Hack: swap previous position with current position
-			float[] tmp = positionChannel.data;
-			positionChannel.setData(previousPositionChannel.data);
-			previousPositionChannel.setData(tmp);
-			*/
 		}
 
 		if(has2dAngularVelocity){
-			//System.out.println( "Updating Angular Velocity 2d");
 			for(int 	i=0, offset = 0; i < controller.particles.size; ++i, offset +=rotationChannel.strideSize){
 				float rotation = angularVelocityChannel.data[i]*controller.deltaTime;
 				if(rotation != 0){
@@ -199,7 +176,6 @@ public class DynamicsInfluencer extends Influencer {
 			}
 		}		
 		else if(has3dAngularVelocity){
-			//System.out.println( "Updating Angular Velocity 3d");
 			for(int 	i=0, offset = 0, angularOffset = 0; i < controller.particles.size; ++i, 
 					offset +=rotationChannel.strideSize, angularOffset += angularVelocityChannel.strideSize){
 				

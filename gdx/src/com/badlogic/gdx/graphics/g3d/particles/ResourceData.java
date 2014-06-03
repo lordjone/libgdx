@@ -17,15 +17,20 @@ import com.badlogic.gdx.utils.ObjectMap.Entry;
  * (i.e singleton).
  * The deserialization process must happen in the same order of serialization, because the per object {@link SaveData} blocks are stored
  * as an {@link Array} within the {@link ResourceData}, while the global {@link SaveData} instances can be accessed in any order because
- * require a unique {@link String} and are stored in an {@link ObjectMap}.*/
-/** @author Inferno */
+ * require a unique {@link String} and are stored in an {@link ObjectMap}.
+ * @author Inferno */
 public class ResourceData<T> implements Json.Serializable{
 	
+	/** This interface must be implemented by any class requiring additional assets to be loaded/saved */
 	public static interface Configurable<T>{
 		public void save(AssetManager manager, ResourceData<T> resources);
 		public void load(AssetManager manager, ResourceData<T> resources);
 	}
 	
+	/** Contains all the saved data.
+	 * {@link #data} is a map which link an asset name to its instance.
+	 * {@link #assets} is an array of indices addressing a given 
+	 * {@link com.badlogic.gdx.graphics.g3d.particles.ResourceData.AssetData} in the {@link ResourceData} */
 	public static class SaveData implements Json.Serializable{
 		ObjectMap<String, Object> data;
 		Array<Integer> assets;
@@ -81,6 +86,7 @@ public class ResourceData<T> implements Json.Serializable{
 		}
 	}
 	
+	/** This class contains all the information related to a given asset */
 	public static class AssetData<T> implements Json.Serializable{
 		public String filename;
 		public Class<T> type;
@@ -177,10 +183,6 @@ public class ResourceData<T> implements Json.Serializable{
 	/** @return the unique save data in the map */
 	public SaveData getSaveData(String key) {
 		return uniqueData.get(key);
-	}
-	
-	public void rewind(){
-		currentLoadIndex = 0;
 	}
 
 	@Override

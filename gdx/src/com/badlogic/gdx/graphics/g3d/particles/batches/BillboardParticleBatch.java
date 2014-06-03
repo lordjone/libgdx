@@ -1,7 +1,6 @@
 package com.badlogic.gdx.graphics.g3d.particles.batches;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Mesh;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,11 +13,11 @@ import com.badlogic.gdx.graphics.g3d.Shader;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.DepthTestAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
+import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleShader;
-import com.badlogic.gdx.graphics.g3d.particles.ResourceData;
-import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleShader.AlignMode;
+import com.badlogic.gdx.graphics.g3d.particles.ResourceData;
 import com.badlogic.gdx.graphics.g3d.particles.ResourceData.SaveData;
 import com.badlogic.gdx.graphics.g3d.particles.renderers.BillboardControllerRenderData;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
@@ -30,7 +29,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Pool;
 
 
-/** @author Inferno */
+/** This class is used to render billboard particles.
+ * @author Inferno */
 public class BillboardParticleBatch extends BufferedParticleBatch<BillboardControllerRenderData> {
 	protected static final Vector3 TMP_V1 = new Vector3(), 
 		 TMP_V2 = new Vector3(), 
@@ -681,5 +681,4 @@ public class BillboardParticleBatch extends BufferedParticleBatch<BillboardContr
 			setAlignMode(cfg.mode);
 		}
 	}
-
 }

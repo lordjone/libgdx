@@ -14,9 +14,11 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 /** Base class of all the particle controllers.
- * Encapsulate the generic structure of a controller and methods to update the particles simulation.*/
-/** @author Inferno */
+ * Encapsulate the generic structure of a controller and methods to update the particles simulation.
+ * @author Inferno */
 public class ParticleController implements Json.Serializable, ResourceData.Configurable{
+	
+	/** the default time step used to update the simulation */
 	protected static final float DEFAULT_TIME_STEP = 1f/60; 
 	
 	/** Name of the controller */
@@ -42,6 +44,7 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 	/** Transform flags */
 	public Vector3 scale;
 	
+	/** Not used by the simulation, it should represent the bounding box containing all the particles*/
 	protected BoundingBox boundingBox;
 	
 	/** Time step, DO NOT CHANGE MANUALLY */
@@ -53,11 +56,6 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 		influencers = new Array<Influencer>(true, 3, Influencer.class);
 		setTimeStep(DEFAULT_TIME_STEP);
 	}
-	
-	private void setTimeStep (float timeStep) {
-		deltaTime = timeStep;
-		deltaTimeSqr = deltaTime*deltaTime;
-	}
 
 	public ParticleController(String name, Emitter emitter, ParticleControllerRenderer<?, ?> renderer, Influencer...influencers){
 		this();
@@ -68,6 +66,12 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 		this.influencers = new Array<Influencer>(influencers);
 	}
 
+	/**Sets the delta used to step the simulation */
+	private void setTimeStep (float timeStep) {
+		deltaTime = timeStep;
+		deltaTimeSqr = deltaTime*deltaTime;
+	}
+	
 	/** Sets the current transformation to the given one.
 	 * @param transform the new transform matrix */
 	public void setTransform (Matrix4 transform) {
@@ -81,12 +85,12 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 		this.scale.set(scale, scale, scale);
 	}
 
-	/** Postmultiplies the current transformation with a rotation matrix represented by the given quaternion.*/
+	/** Post-multiplies the current transformation with a rotation matrix represented by the given quaternion.*/
 	public void rotate(Quaternion rotation){
 		this.transform.rotate(rotation);
 	}
 	
-	/** Postmultiplies the current transformation with a rotation matrix by the given angle around the given axis.
+	/** Post-multiplies the current transformation with a rotation matrix by the given angle around the given axis.
 	 * @param axis the rotation axis
 	 * @param angle the rotation angle in degrees*/
 	public void rotate(Vector3 axis, float angle){
@@ -204,12 +208,14 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 			influencer.update();
 	}
 
+	/**Updates the renderer used by this controller, usually this means the particles will be draw inside a batch. */
 	public void draw () {
 		if(particles.size > 0){
 			renderer.update();
 		}
 	}
 	
+	/** @return a copy of this controller*/
 	public ParticleController copy () {
 		Emitter emitter = (Emitter)this.emitter.copy();
 		Influencer[] influencers = new Influencer[this.influencers.size];
@@ -226,12 +232,14 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 			influencer.dispose();
 	}
 
+	/** @return a copy of this controller, should be used after the particle effect has been loaded. */
 	public BoundingBox getBoundingBox (){
 		if(boundingBox == null) boundingBox = new BoundingBox();
 		calculateBoundingBox();
 		return boundingBox;
 	}
 	
+	/** Updates the bounding box using the position channel. */
 	protected void calculateBoundingBox () {
 		boundingBox.clr();
 		FloatChannel positionChannel = particles.getChannel(ParticleChannels.Position);
@@ -242,6 +250,7 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 		}
 	}
 
+	/** @return the index of the Influencer of the given type. */
 	private <K extends Influencer> int findIndex(Class<K> type){
 		for(int i = 0; i< influencers.size; ++i){
 			Influencer influencer = influencers.get(i);
@@ -252,17 +261,20 @@ public class ParticleController implements Json.Serializable, ResourceData.Confi
 		return -1;
 	}
 	
+	/** @return the influencer having the given type. */
 	public <K extends Influencer> K findInfluencer (Class<K> influencerClass) {
 		int index = findIndex(influencerClass);
 		return index >-1 ? (K)influencers.get(index) : null;
 	}
 	
+	/** Removes the Influencer of the given type. */
 	public  <K extends Influencer> void removeInfluencer (Class<K> type) {
 		int index = findIndex(type);
 		if(index > -1 )
 			influencers.removeIndex(index);
 	}
 	
+	/** Replaces the Influencer of the given type with the one passed as parameter. */
 	public <K extends Influencer> boolean replaceInfluencer (Class<K> type, K newInfluencer) {
 		int index = findIndex(type);
 		if(index > -1){

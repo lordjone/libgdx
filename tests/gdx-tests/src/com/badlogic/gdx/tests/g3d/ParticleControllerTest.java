@@ -22,6 +22,9 @@ import com.badlogic.gdx.graphics.g3d.particles.ParticleController;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
 import com.badlogic.gdx.graphics.g3d.particles.emitters.RegularEmitter;
 import com.badlogic.gdx.graphics.g3d.particles.influencers.ColorInfluencer;
+import com.badlogic.gdx.graphics.g3d.particles.influencers.DynamicsInfluencer;
+import com.badlogic.gdx.graphics.g3d.particles.influencers.DynamicsModifier;
+import com.badlogic.gdx.graphics.g3d.particles.influencers.DynamicsModifier.BrownianAcceleration;
 import com.badlogic.gdx.graphics.g3d.particles.influencers.RegionInfluencer;
 import com.badlogic.gdx.graphics.g3d.particles.influencers.ScaleInfluencer;
 import com.badlogic.gdx.graphics.g3d.particles.influencers.SpawnInfluencer;
@@ -109,33 +112,29 @@ public class ParticleControllerTest extends BaseG3dTest{
 		billboardParticleBatch.setTexture(assets.get(DEFAULT_PARTICLE, Texture.class));
 		
 		//X
-		ParticleController controller = createBillboardController(new float[] {1, 0.12156863f, 0.047058824f}, particleTexture);
-		controller.init();
-		controller.start();
-		emitters.add(controller);
-		controller.translate(tmpVector.set(5,5,0));
-		controller.rotate(Vector3.X, -90);
-		ui.addAction(new RotationAction(controller, Vector3.X, 360));
-		/*
+		addEmitter(new float[] {1, 0.12156863f, 0.047058824f}, particleTexture, 
+								tmpVector.set(5,5,0), Vector3.X, 360);
+
 		//Y
-		controller = createBillboardController(new float[] { 0.12156863f, 1, 0.047058824f}, particleTexture);
-		controller.init();
-		controller.start();
-		controller.translate(tmpVector.set(0,5,-5));
-		controller.rotate(Vector3.Z, -90);
-		ui.addAction(new RotationAction(controller, Vector3.Y, -360));
-		emitters.add(controller);
+		addEmitter(new float[] {0.12156863f, 1, 0.047058824f}, particleTexture, 
+								tmpVector.set(0,5,-5), Vector3.Y, -360);
 		
 		//Z
-		controller = createBillboardController(new float[] {0.12156863f, 0.047058824f, 1}, particleTexture);
+		addEmitter(new float[] {0.12156863f, 0.047058824f, 1}, particleTexture, 
+			tmpVector.set(0,5,5), Vector3.Z, -360);
+
+		setupUI();
+	}
+	
+	private void addEmitter(	float[] colors, Texture particleTexture, 
+														Vector3 translation, 
+														Vector3 actionAxis, float actionRotation){
+		ParticleController controller = createBillboardController(colors, particleTexture);
 		controller.init();
 		controller.start();
-		controller.translate(tmpVector.set(0,5,5));
-		controller.rotate(Vector3.Z, -90);
-		ui.addAction(new RotationAction(controller, Vector3.Z, -360));		
 		emitters.add(controller);
-		*/
-		setupUI();
+		controller.translate(translation);
+		ui.addAction(new RotationAction(controller, actionAxis, actionRotation));
 	}
 
 	private void setupUI () {
@@ -165,8 +164,12 @@ public class ParticleControllerTest extends BaseG3dTest{
 		pointSpawnShapeValue.zOffsetValue.setActive(true);
 		SpawnInfluencer spawnSource = new SpawnInfluencer(pointSpawnShapeValue);
 
+		//Scale
 		ScaleInfluencer scaleInfluencer = new ScaleInfluencer();
-		scaleInfluencer.value.setHigh(1f);
+		scaleInfluencer.value.setTimeline(new float[]{0, 1});
+		scaleInfluencer.value.setScaling(new float[]{1, 0});
+		scaleInfluencer.value.setLow(0);
+		scaleInfluencer.value.setHigh(1);
 
 		//Color
 		ColorInfluencer.Single colorInfluencer = new ColorInfluencer.Single();
@@ -175,21 +178,22 @@ public class ParticleControllerTest extends BaseG3dTest{
 		colorInfluencer.alphaValue.setHigh(1);
 		colorInfluencer.alphaValue.setTimeline(new float[] {0, 0.5f, 0.8f, 1});
 		colorInfluencer.alphaValue.setScaling(new float[] {0, 0.15f, 0.5f, 0});
-
-		//Velocity
-		/*
-		BillboardVelocityInfluencer velocityInfluencer = new BillboardVelocityInfluencer();
-		BillboardBrownianVelocityValue velocityValue = new BillboardBrownianVelocityValue();
-		velocityValue.strengthValue.setHigh(5, 10);
-		velocityInfluencer.velocities.add(velocityValue);
-		*/
+		
+		//Dynamics
+		DynamicsInfluencer dynamicsInfluencer = new DynamicsInfluencer();
+		BrownianAcceleration modifier = new BrownianAcceleration();
+		modifier.strengthValue.setTimeline(new float[]{0,1});
+		modifier.strengthValue.setScaling(new float[]{0,1});
+		modifier.strengthValue.setHigh(80);
+		modifier.strengthValue.setLow(1, 5);
+		dynamicsInfluencer.velocities.add(modifier);
 		
 		return new ParticleController("Billboard Controller", emitter, new BillboardRenderer(billboardParticleBatch),
 			new RegionInfluencer.Single(particleTexture),
 			spawnSource,
-			//velocityInfluencer,
-			//scaleInfluencer,
-			colorInfluencer
+			scaleInfluencer,
+			colorInfluencer,
+			dynamicsInfluencer
 			);
 	}
 

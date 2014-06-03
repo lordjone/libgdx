@@ -5,12 +5,10 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 /** An {@link Emitter} is a {@link ParticleControllerComponent} which will handle the particles emission.
- * It must update the {@link Emitter#activeCount} to reflect the current amount of living particles.
  * It must update the {@link Emitter#percent} to reflect the current percentage of the current emission cycle. 
- * It should consider {@link Emitter#minParticleCount} and {@link Emitter#maxParticleCount} to rule particle emission. 
- * It must keep the {@link ParticleController#particles} array packed so the alive particles will be from 0 to {@link Emitter#activeCount}.
- * It should notify the {@link ParticleController} when particles are activated, killed, or when an emission cycle begins.*/
-/** @author Inferno */
+ * It should consider {@link Emitter#minParticleCount} and {@link Emitter#maxParticleCount} to rule particle emission.
+ * It should notify the particle controller when particles are activated, killed, or when an emission cycle begins.
+ * @author Inferno */
 public abstract class  Emitter extends ParticleControllerComponent implements Json.Serializable{
 	/** The min/max quantity of particles */
 	public int minParticleCount, maxParticleCount = 4;

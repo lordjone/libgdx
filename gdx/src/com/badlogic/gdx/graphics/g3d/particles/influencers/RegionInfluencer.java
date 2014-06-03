@@ -2,15 +2,14 @@ package com.badlogic.gdx.graphics.g3d.particles.influencers;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
 import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
+import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
 /** It's an {@link Influencer} which assigns a region of a {@link Texture} to the particles.
- * It works on {@link BillboardParticleController} and {@link PointSpriteParticleController} only. */
-/** @author Inferno */
+ * @author Inferno */
 public abstract class RegionInfluencer extends Influencer {
 	
 	/** Assigns the first region of {@link RegionInfluencer#regions} to the particles.*/
@@ -165,7 +164,6 @@ public abstract class RegionInfluencer extends Influencer {
 	
 	public Array<AspectTextureRegion> regions;
 	FloatChannel regionChannel;
-	//FloatChannel sizeChannel;
 	
 	public RegionInfluencer(int regionsCount){
 		this.regions = new Array<AspectTextureRegion>(false, regionsCount, AspectTextureRegion.class);
@@ -212,7 +210,6 @@ public abstract class RegionInfluencer extends Influencer {
 	@Override
 	public void allocateChannels () {
 		regionChannel = controller.particles.addChannel(ParticleChannels.TextureRegion);
-		//sizeChannel = controller.particles.addChannel(ParticleChannels.HalfSize);
 	}
 
 	@Override

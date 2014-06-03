@@ -1,32 +1,26 @@
 package com.badlogic.gdx.graphics.g3d.particles.emitters;
 
+import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleChannels;
 import com.badlogic.gdx.graphics.g3d.particles.ParticleControllerComponent;
-import com.badlogic.gdx.graphics.g3d.particles.ParallelArray.FloatChannel;
 import com.badlogic.gdx.graphics.g3d.particles.values.RangedNumericValue;
 import com.badlogic.gdx.graphics.g3d.particles.values.ScaledNumericValue;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 
-/** It's a generic use {@link Emitter} which fits most of the particles simulation scenarios. */
-/** @author Inferno */
+/** It's a generic use {@link Emitter} which fits most of the particles simulation scenarios. 
+ * @author Inferno */
 public class RegularEmitter extends Emitter implements Json.Serializable {
 	
-	/**
-	 * Possible emission modes. Emission mode does not affect already emitted particles.
-	 */
+	/** Possible emission modes. Emission mode does not affect already emitted particles. */
 	public enum EmissionMode {
-		/**
-		 * New particles can be emitted.
-		 */
+		/** New particles can be emitted. */
 		Enabled,
-		/**
-		 * Only valid for continuous emitters. It will only emit particles until the end of the effect duration. After that emission cycle will not be restarted.
-		 */
+		/** Only valid for continuous emitters. 
+		 * It will only emit particles until the end of the effect duration. 
+		 * After that emission cycle will not be restarted.*/
 		EnabledUntilCycleEnd,
-		/**
-		 * Prevents new particle emission.
-		 */
+		/** Prevents new particle emission.*/
 		Disabled
 	}
 	
@@ -208,18 +202,14 @@ public class RegularEmitter extends Emitter implements Json.Serializable {
 		this.continuous = continuous;
 	}
 	
-	/**
-	 * Gets current emission mode.
-	 * @return Current emission mode.
-	 */
+	/** Gets current emission mode.
+	 * @return Current emission mode.*/
 	public EmissionMode getEmissionMode(){
 		return emissionMode;
 	}
 	
-	/**
-	 * Sets emission mode. Emission mode does not affect already emitted particles.
-	 * @param emissionMode Emission mode to set.
-	 */
+	/** Sets emission mode. Emission mode does not affect already emitted particles.
+	 * @param emissionMode Emission mode to set.*/
 	public void setEmissionMode(EmissionMode emissionMode){
 		this.emissionMode = emissionMode;
 	}
