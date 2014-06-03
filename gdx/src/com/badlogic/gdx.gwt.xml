@@ -66,6 +66,7 @@
 	<!-- graphics -->		
 		<include name="graphics/Camera.java"/>
 		<include name="graphics/Color.java"/>
+		<include name="graphics/Colors.java"/>
 		<include name="graphics/Cubemap.java"/>
 		<include name="graphics/FPSLogger.java"/>
 		<include name="graphics/GL20.java"/>
@@ -291,6 +292,7 @@
 		<include name="math/Polygon.java"/>
 		<include name="math/Polyline.java"/>
 		<include name="math/Quaternion.java"/>
+		<include name="math/RandomXS128.java"/>
 		<include name="math/Rectangle.java"/>
 		<include name="math/Vector.java"/>
 		<include name="math/Vector2.java"/>
