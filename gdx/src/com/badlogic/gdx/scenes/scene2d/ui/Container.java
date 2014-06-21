@@ -549,16 +549,7 @@ public class Container<T extends Actor> extends WidgetGroup {
 	}
 
 	public float getMinWidth () {
-<<<<<<< HEAD
-<<<<<<< HEAD
-		return (minWidth == null ? (widget instanceof Layout ? ((Layout)widget).getMinWidth() : (widget != null ? widget.getWidth() : 0)) : minWidth)
-			+ padLeft + padRight;
-=======
 		return minWidth.get(actor) + padLeft.get(this) + padRight.get(this);
->>>>>>> libgdx/master
-=======
-		return minWidth.get(actor) + padLeft.get(this) + padRight.get(this);
->>>>>>> official
 	}
 
 	public Value getMinHeightValue () {
@@ -566,16 +557,7 @@ public class Container<T extends Actor> extends WidgetGroup {
 	}
 
 	public float getMinHeight () {
-<<<<<<< HEAD
-<<<<<<< HEAD
-		return (minHeight == null ? (widget instanceof Layout ? ((Layout)widget).getMinHeight() : (widget != null ? widget.getHeight() : 0)) : minHeight)
-			+ padTop + padBottom;
-=======
 		return minHeight.get(actor) + padTop.get(this) + padBottom.get(this);
->>>>>>> libgdx/master
-=======
-		return minHeight.get(actor) + padTop.get(this) + padBottom.get(this);
->>>>>>> official
 	}
 
 	public Value getPrefWidthValue () {
@@ -583,15 +565,7 @@ public class Container<T extends Actor> extends WidgetGroup {
 	}
 
 	public float getPrefWidth () {
-<<<<<<< HEAD
-<<<<<<< HEAD
-		float v = prefWidth == null ? (widget instanceof Layout ? ((Layout)widget).getPrefWidth() : (widget != null ? widget.getWidth() : 0)) : prefWidth;
-=======
 		float v = prefWidth.get(actor);
->>>>>>> libgdx/master
-=======
-		float v = prefWidth.get(actor);
->>>>>>> official
 		if (background != null) v = Math.max(v, background.getMinWidth());
 		return v + padLeft.get(this) + padRight.get(this);
 	}
@@ -601,16 +575,7 @@ public class Container<T extends Actor> extends WidgetGroup {
 	}
 
 	public float getPrefHeight () {
-<<<<<<< HEAD
-<<<<<<< HEAD
-		float v = prefHeight == null ? (widget instanceof Layout ? ((Layout)widget).getPrefHeight() : (widget != null ? widget.getHeight() : 0))
-			: prefHeight;
-=======
 		float v = prefHeight.get(actor);
->>>>>>> libgdx/master
-=======
-		float v = prefHeight.get(actor);
->>>>>>> official
 		if (background != null) v = Math.max(v, background.getMinHeight());
 		return v + padTop.get(this) + padBottom.get(this);
 	}
@@ -620,18 +585,8 @@ public class Container<T extends Actor> extends WidgetGroup {
 	}
 
 	public float getMaxWidth () {
-<<<<<<< HEAD
-<<<<<<< HEAD
-		float v = maxWidth == null ? (widget instanceof Layout ? ((Layout)widget).getMaxWidth() : (widget != null ? widget.getWidth() : 0)) : maxWidth;
-		if (v > 0) v += padLeft + padRight;
-=======
 		float v = maxWidth.get(actor);
 		if (v > 0) v += padLeft.get(this) + padRight.get(this);
->>>>>>> libgdx/master
-=======
-		float v = maxWidth.get(actor);
-		if (v > 0) v += padLeft.get(this) + padRight.get(this);
->>>>>>> official
 		return v;
 	}
 
@@ -640,18 +595,8 @@ public class Container<T extends Actor> extends WidgetGroup {
 	}
 
 	public float getMaxHeight () {
-<<<<<<< HEAD
-<<<<<<< HEAD
-		float v = maxHeight == null ? (widget instanceof Layout ? ((Layout)widget).getMaxHeight() : (widget != null ? widget.getHeight() : 0)) : maxHeight;
-		if (v > 0) v += padTop + padBottom;
-=======
 		float v = maxHeight.get(actor);
 		if (v > 0) v += padTop.get(this) + padBottom.get(this);
->>>>>>> libgdx/master
-=======
-		float v = maxHeight.get(actor);
-		if (v > 0) v += padTop.get(this) + padBottom.get(this);
->>>>>>> official
 		return v;
 	}
 

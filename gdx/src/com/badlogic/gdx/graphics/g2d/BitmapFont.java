@@ -338,12 +338,6 @@ public class BitmapFont implements Disposable {
 		int width = 0;
 		Glyph lastGlyph = null;
 		while (start < end) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-			lastGlyph = data.getGlyph(str.charAt(start++));
-=======
-=======
->>>>>>> official
 			char ch = str.charAt(start++);
 			if (ch == '[' && markupEnabled) {
 				if (!(start < end && str.charAt(start) == '[')) { // non escaped '['
@@ -355,10 +349,6 @@ public class BitmapFont implements Disposable {
 				start++;
 			}
 			lastGlyph = data.getGlyph(ch);
-<<<<<<< HEAD
->>>>>>> libgdx/master
-=======
->>>>>>> official
 			if (lastGlyph != null) {
 				width = lastGlyph.xadvance;
 				break;
@@ -366,11 +356,6 @@ public class BitmapFont implements Disposable {
 		}
 		while (start < end) {
 			char ch = str.charAt(start++);
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> official
 			if (ch == '[' && markupEnabled) {
 				if (!(start < end && str.charAt(start) == '[')) { // non escaped '['
 					while (start < end && str.charAt(start) != ']')
@@ -380,10 +365,6 @@ public class BitmapFont implements Disposable {
 				}
 				start++;
 			}
-<<<<<<< HEAD
->>>>>>> libgdx/master
-=======
->>>>>>> official
 			Glyph g = data.getGlyph(ch);
 			if (g != null) {
 				width += lastGlyph.getKerning(ch);
@@ -533,11 +514,6 @@ public class BitmapFont implements Disposable {
 
 		for (; index < end; index++) {
 			char ch = str.charAt(index);
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> official
 			if (ch == '[' && markupEnabled) {
 				index++;
 				if (!(index < end && str.charAt(index) == '[')) { // non escaped '['
@@ -546,10 +522,6 @@ public class BitmapFont implements Disposable {
 					continue;
 				}
 			}
-<<<<<<< HEAD
->>>>>>> libgdx/master
-=======
->>>>>>> official
 			Glyph g = data.getGlyph(ch);
 			if (g != null) {
 				if (lastGlyph != null) width += lastGlyph.getKerning(ch);
