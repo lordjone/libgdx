@@ -41,10 +41,14 @@ public class LwjglDebugStarter {
 //		new SharedLibraryLoader("../../gdx/libs/gdx-natives.jar").load("gdx");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		GdxTest test = new IssueTest();		
 =======
 		GdxTest test = new StateMachineTest();		
 >>>>>>> libgdx/master
+=======
+		GdxTest test = new StateMachineTest();		
+>>>>>>> official
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.r = config.g = config.b = config.a = 8;
 //		config.width = 320;
